@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { auth, db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-
+import { useTranslation } from 'react-i18next';
 
 function CompleteProfile() {
+  const { t } = useTranslation();
+
   const [dob, setDob] = useState('');
   const [calculatedAge, setCalculatedAge] = useState('');
   const [allergies, setAllergies] = useState('');
@@ -38,7 +40,7 @@ function CompleteProfile() {
     const user = auth.currentUser;
 
     if (!user) {
-      setError('User not authenticated.');
+      setError(t('user_not_authenticated'));
       console.error('Error: User not authenticated.');
       return;
     }
@@ -60,7 +62,7 @@ function CompleteProfile() {
       navigate('/dashboard');
 
     } catch (error) {
-      setError('Failed to complete profile');
+      setError(t('profile_update_failed'));
       console.error('Error in profile completion:', error);
     }
   };
@@ -68,11 +70,11 @@ function CompleteProfile() {
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg w-96">
         <h1 className="text-3xl font-bold text-primary mb-6 text-center">
-          Complete Your Profile
+          {t('complete_profile')}
         </h1>
         <form onSubmit={handleCompleteProfile} className="space-y-4">
           <label className="block text-sm font-medium text-gray-700">
-            Date of Birth
+            {t('dob')}
           </label>
           <input
             type="date"
@@ -83,24 +85,24 @@ function CompleteProfile() {
           />
           {calculatedAge && (
             <p className="mt-2 text-sm">
-              Age: <strong>{calculatedAge}</strong> years
+              {t('age')}: <strong>{calculatedAge}</strong> {t('years')}
             </p>
           )}
 
           <textarea
-            placeholder="Allergies (if any or none)"
+            placeholder={t('allergies_placeholder')}
             value={allergies}
             onChange={(e) => setAllergies(e.target.value)}
             className="w-full p-2 border rounded focus:ring-2 focus:ring-accent"
           ></textarea>
           <textarea
-            placeholder="Current Medications (if any or none)"
+            placeholder={t('medications_placeholder')}
             value={medications}
             onChange={(e) => setMedications(e.target.value)}
             className="w-full p-2 border rounded focus:ring-2 focus:ring-accent"
           ></textarea>
           <textarea
-            placeholder="Past Surgeries (if any or none)"
+            placeholder={t('surgeries_placeholder')}
             value={surgeries}
             onChange={(e) => setSurgeries(e.target.value)}
             className="w-full p-2 border rounded focus:ring-2 focus:ring-accent"
@@ -109,7 +111,7 @@ function CompleteProfile() {
             type="submit"
             className="w-full bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded transition duration-200"
           >
-            Save Profile
+            {t('save_profile')}
           </button>
         </form>
         {error && <p className="text-red-500 mt-4 text-center">{error}</p>}

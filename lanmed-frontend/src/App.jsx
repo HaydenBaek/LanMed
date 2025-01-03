@@ -9,19 +9,26 @@ import { useAuth } from './hooks/useAuth';
 import './i18n';  // Import the i18n configuration
 
 function App() {
-  const user = useAuth();  // Get authenticated user (or null if not logged in)
+  const { user, loading } = useAuth();  // Destructure user and loading
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>  {/* Show loading message or spinner */}
+      </div>
+    );
+  }
 
   return (
     <Router>
-<div className="min-h-screen bg-lighter flex items-start justify-center pt-10">
-
+      <div className="min-h-screen bg-lighter flex items-start justify-center pt-10">
         <div>
           <Routes>
-            <Route path="/landing" element={<LandingPage/>}/>
-            <Route path="/signup" element={<SignUpForm />} />
-            <Route path="/login" element={<LoginForm />} />
+            <Route path="/landing" element={<LandingPage />} />
+            <Route path="/signup" element={!user ? <SignUpForm /> : <Navigate to="/dashboard" />} />
+            <Route path="/login" element={!user ? <LoginForm /> : <Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/signup" />} />
-            <Route path="/complete-profile" element={<CompleteProfile />} />
+            <Route path="/complete-profile" element={user ? <CompleteProfile /> : <Navigate to="/signup" />} />
             <Route path="/" element={<Navigate to={user ? "/dashboard" : "/landing"} />} />
           </Routes>
         </div>

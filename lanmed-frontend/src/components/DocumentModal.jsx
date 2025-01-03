@@ -5,13 +5,14 @@ import generatePDF from './generatePDF';
 import { useTranslation } from 'react-i18next';
 
 const DocumentModal = ({ isOpen, onClose }) => {
+    const { t } = useTranslation();
+
     const initialFormState = {
         pdfName: '',
         symptoms: '',
         symptomStartDate: '',
         symptomStartTime: '',
         severity: '',
-        medicationTaken: 'No',
         doctorQuestions: '',
         notes: '',
         translatedSymptoms: '',
@@ -89,29 +90,30 @@ const DocumentModal = ({ isOpen, onClose }) => {
             alert('User data is not available. Please complete your profile first.');
             return;
         }
-
+    
         setIsTranslating(true);
-
-        const [translatedSymptoms, translatedQuestions] = await Promise.all([
+    
+        const [translatedSymptoms, translatedQuestions, translatedNotes] = await Promise.all([
             translateText(formData.symptoms),
-            translateText(formData.doctorQuestions)
+            translateText(formData.doctorQuestions),
+            translateText(formData.notes)  // Add translation for notes
         ]);
-
+    
         const finalData = {
             ...userData,
             ...formData,
             translatedSymptoms,
             translatedQuestions,
+            translatedNotes,  // Add translated notes
             createdAt: new Date()
         };
-
+    
         try {
             const docRef = await addDoc(collection(db, `users/${user.uid}/documents`), finalData);
             console.log('Document created with ID:', docRef.id);
-
+    
             await generatePDF(finalData, userData);  // Pass userData as a second argument
-
-
+    
             resetForm();
             onClose();
         } catch (error) {
@@ -119,6 +121,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
         }
         setIsTranslating(false);
     };
+    
 
 
     const resetForm = () => {
@@ -129,36 +132,36 @@ const DocumentModal = ({ isOpen, onClose }) => {
     const components = [
         // Step 1 - Document Naming and User Info
         <div key="step1">
-            <h2 className="text-2xl font-bold mb-4">Name Your Document</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('name_document')}</h2>
             <input
                 name="pdfName"
                 type="text"
-                placeholder="Enter PDF Name"
+                placeholder={t('enter_pdf_name')}
                 value={formData.pdfName}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 required
             />
-            <h2 className="text-xl font-bold mt-6">Your Information</h2>
-            <p><strong>Name:</strong> {userData.name || 'N/A'}</p>
-            <p><strong>Age:</strong> {userData.age || 'N/A'}</p>
-            <p><strong>Allergies:</strong> {userData.allergies || 'None'}</p>
-            <p><strong>Medications:</strong> {userData.medications || 'None'}</p>
+            <h2 className="text-xl font-bold mt-6">{t('your_information')}</h2>
+            <p><strong>{t('name')}:</strong> {userData.name || t('na')}</p>
+            <p><strong>{t('age')}:</strong> {userData.age || t('na')}</p>
+            <p><strong>{t('allergies')}:</strong> {userData.allergies || t('none')}</p>
+            <p><strong>{t('medications')}:</strong> {userData.medications || t('none')}</p>
         </div>,
 
         // Step 2 - Symptom Description
         <div key="step2">
-            <h2 className="text-2xl font-bold mb-4">Describe Symptoms</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('describe_symptoms')}</h2>
             <textarea
                 name="symptoms"
-                placeholder="Describe your symptoms"
+                placeholder={t('describe_your_symptoms')}
                 value={formData.symptoms}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 required
             ></textarea>
 
-            <label>Date Symptoms Started:</label>
+            <label>{t('symptom_start_date')}:</label>
             <input
                 type="date"
                 name="symptomStartDate"
@@ -168,7 +171,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
                 className="w-full p-2 border rounded"
             />
 
-            <label>Time Symptoms Started:</label>
+            <label>{t('symptom_start_time')}:</label>
             <input
                 type="time"
                 name="symptomStartTime"
@@ -181,7 +184,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
 
         // Step 3 - Severity and Medication
         <div key="step3">
-            <h2 className="text-2xl font-bold mb-4">Symptom Severity (1-10)</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('symptom_severity')}</h2>
             <input
                 type="number"
                 name="severity"
@@ -191,37 +194,37 @@ const DocumentModal = ({ isOpen, onClose }) => {
                 min="1"
                 max="10"
                 required
-                placeholder="Enter severity (1-10)"
+                placeholder={t('enter_severity')}
             />
 
+            <h2 className="text-2xl font-bold mt-6">{t('medication_taken')}</h2>
+            <input
+            type="text"
+            name="medicationTaken"
+            value={formData.medicationTaken}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+            placeholder={t('enter_medication')}
+            />
 
-            <h2 className="text-2xl font-bold mt-6">Did you take any medication?</h2>
-            <select
-                name="medicationTaken"
-                value={formData.medicationTaken}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-            >
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-            </select>
         </div>,
 
-        // Step 4 - Doctor Questions and Additional Notes
+        // Step 4 - Doctor Questions and Notes
         <div key="step4">
-            <h2 className="text-2xl font-bold mb-4">Questions for the Doctor</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('doctor_questions')}</h2>
             <textarea
                 name="doctorQuestions"
-                placeholder="Any questions for the doctor?"
+                placeholder={t('any_questions_doctor')}
                 value={formData.doctorQuestions}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
             ></textarea>
 
-            <h2 className="text-2xl font-bold mt-6">Additional Notes</h2>
+            <h2 className="text-2xl font-bold mt-6">{t('additional_notes')}</h2>
             <textarea
                 name="notes"
-                placeholder="Any additional notes"
+                placeholder={t('any_additional_notes')}
                 value={formData.notes}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
@@ -230,8 +233,8 @@ const DocumentModal = ({ isOpen, onClose }) => {
 
         // Step 5 - Translation Selection
         <div key="step5">
-            <h2 className="text-2xl font-bold mb-4">Translate Document</h2>
-            <label>Select Translation Language:</label>
+            <h2 className="text-2xl font-bold mb-4">{t('translate_document')}</h2>
+            <label>{t('select_translation_language')}:</label>
             <select
                 name="language"
                 value={formData.language}
@@ -239,77 +242,8 @@ const DocumentModal = ({ isOpen, onClose }) => {
                 className="w-full p-2 border rounded"
             >
                 <option value="en">English</option>
-                <option value="de">Deutsch</option>
-                <option value="fr">Français</option>
-                <option value="es">Español</option>
-                <option value="it">Italiano</option>
-                <option value="nl">Nederlands</option>
-                <option value="pl">Polski</option>
-                <option value="pt">Português</option>
-                <option value="ru">Русский</option>
-                <option value="ja">日本語</option>
-                <option value="zh">中文 (简体)</option>
                 <option value="ko">한국어</option>
-                <option value="tr">Türkçe</option>
-                <option value="ar">العربية</option>
-                <option value="el">Ελληνικά</option>
-                <option value="cs">Čeština</option>
-                <option value="sv">Svenska</option>
-                <option value="da">Dansk</option>
-                <option value="fi">Suomi</option>
-                <option value="hu">Magyar</option>
-                <option value="ro">Română</option>
-                <option value="bg">Български</option>
-                <option value="uk">Українська</option>
-                <option value="lt">Lietuvių</option>
-                <option value="lv">Latviešu</option>
-                <option value="et">Eesti keel</option>
-                <option value="sk">Slovenčina</option>
             </select>
-
-        </div>,
-
-        // Step 6 - Review
-        <div key="step6">
-            <h2 className="text-2xl font-bold mb-6">Review Your Information</h2>
-
-            <div className="space-y-4">
-                <div>
-                    <h3 className="text-xl font-semibold">Document Information</h3>
-                    <p><strong>PDF Name:</strong> {formData.pdfName || 'N/A'}</p>
-                </div>
-
-                <div>
-
-                    <p><strong>Symptom Description:</strong> {formData.symptoms || 'N/A'}</p>
-                    <p><strong>Symptom Start Date:</strong> {formData.symptomStartDate || 'N/A'}</p>
-                    <p><strong>Symptom Start Time:</strong> {formData.symptomStartTime || 'N/A'}</p>
-                    <p><strong>Severity:</strong> {formData.severity || 'N/A'}</p>
-                    <p><strong>Medication Taken:</strong> {formData.medicationTaken}</p>
-                </div>
-
-                <div>
-                    <h3 className="text-xl font-semibold">Questions for the Doctor</h3>
-                    <p>{formData.doctorQuestions || 'No questions provided'}</p>
-                </div>
-
-                <div>
-                    <h3 className="text-xl font-semibold">Additional Notes</h3>
-                    <p>{formData.notes || 'No additional notes'}</p>
-                </div>
-
-                <div>
-                    <h3 className="text-xl font-semibold">Translation</h3>
-                    <p><strong>Target Language:</strong> {formData.language.toUpperCase()}</p>
-                </div>
-            </div>
-
-            <button
-                onClick={handleTranslateAndSubmit}
-                className="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-lg font-medium transition duration-200"
-            >
-                Make a PDF
-            </button>
         </div>
     ];
 
@@ -320,22 +254,34 @@ const DocumentModal = ({ isOpen, onClose }) => {
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
                 {components[step]}
                 <div className="flex justify-between mt-6">
-                    {step > 0 && <button
-                        onClick={() => setStep(step - 1)}
-                        className="bg-light hover:bg-lighter text-white px-6 py-3 rounded-lg font-medium transition duration-200"
-                    >
-                        Previous
-                    </button>}
-                    {step < components.length - 1 && <button
-                        onClick={() => setStep(step + 1)}
-                        className="bg-accent hover:bg-secondary text-white px-6 py-3 rounded-lg font-medium transition duration-200"
-                    >
-                        Next
-                    </button>}
+                    {step > 0 && (
+                        <button
+                            onClick={() => setStep(step - 1)}
+                            className="bg-light hover:bg-lighter text-white px-6 py-3 rounded-lg font-medium transition duration-200"
+                        >
+                            {t('previous')}
+                        </button>
+                    )}
+                    {step < components.length - 1 && (
+                        <button
+                            onClick={() => setStep(step + 1)}
+                            className="bg-accent hover:bg-secondary text-white px-6 py-3 rounded-lg font-medium transition duration-200"
+                        >
+                            {t('next')}
+                        </button>
+                    )}
+                    {step === components.length - 1 && (
+                        <button
+                            onClick={handleTranslateAndSubmit}
+                            className="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-lg font-medium transition duration-200"
+                        >
+                            {t('make_pdf')}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
     );
-};
+}
 
 export default DocumentModal;

@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import DocumentModal from './DocumentModal';
+import { useTranslation } from 'react-i18next';
 
 function Dashboard() {
+    const { t, i18n } = useTranslation();
     const [userData, setUserData] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const user = auth.currentUser;
@@ -19,12 +21,11 @@ function Dashboard() {
                 } else {
                     console.warn('No user data found in Firestore. Falling back to Firebase Auth...');
                     
-                    // Fallback to Firebase Auth data
                     const authUser = auth.currentUser;
                     if (authUser) {
                         setUserData({
-                            name: authUser.displayName || 'Unknown',
-                            email: authUser.email || 'No email',
+                            name: authUser.displayName || t('unknown'),
+                            email: authUser.email || t('no_email'),
                             uid: authUser.uid
                         });
                     } else {
@@ -35,7 +36,7 @@ function Dashboard() {
         };
     
         fetchUserData();
-    }, [user]);
+    }, [user, t]);
     
 
     const openModal = () => {
@@ -51,9 +52,9 @@ function Dashboard() {
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
                 <div className="p-2 text-primary">
                     <h1 className="text-3xl font-bold">
-                        Welcome {userData?.name || user?.displayName || 'to LanMed'} to LanMed
+                        {t('welcome_dashboard', { name: userData?.name || user?.displayName || 'LanMed' })}
                     </h1>
-                    <p className="mt-4">Your medical translator at your fingertips.</p>
+                    <p className="mt-4">{t('translator_description')}</p>
                 </div>
             </div>
 
@@ -65,7 +66,7 @@ function Dashboard() {
                 >
                     <span className="relative px-8 py-6 flex items-center space-x-3 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">
                         <span className="text-4xl font-bold">+</span>
-                        <span className="text-xl">Create Document</span>
+                        <span className="text-xl">{t('create_document')}</span>
                     </span>
                 </button>
             </div>
