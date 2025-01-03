@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Translation resources
 const resources = {
@@ -12,7 +13,14 @@ const resources = {
             "guide": "Get Started",
             "contact": "Contact Us",
             "contact_description": "Reach out to our team for assistance.",
-            "select_language": "Select your language"
+            "select_language": "Select your language",
+            "sign_up": "Sign Up",
+            "full_name": "Full Name (Legal)",
+            "email": "Email",
+            "password": "Password",
+            "submit": "Sign Up",
+            "login": "Log in",
+            "login_prompt": "Already have an account?"
         }
     },
     de: {
@@ -24,7 +32,14 @@ const resources = {
             "guide": "Loslegen",
             "contact": "Kontakt",
             "contact_description": "Kontaktieren Sie unser Team für Unterstützung.",
-            "select_language": "Wählen Sie Ihre Sprache"
+            "select_language": "Wählen Sie Ihre Sprache",
+            "sign_up": "Anmelden",
+            "full_name": "Vollständiger Name (rechtlich)",
+            "email": "E-Mail",
+            "password": "Passwort",
+            "submit": "Registrieren",
+            "login": "Einloggen",
+            "login_prompt": "Sie haben bereits ein Konto?"
         }
     },
     fr: {
@@ -36,7 +51,14 @@ const resources = {
             "guide": "Commencer",
             "contact": "Contactez-nous",
             "contact_description": "Contactez notre équipe pour toute assistance.",
-            "select_language": "Choisissez votre langue"
+            "select_language": "Choisissez votre langue",
+            "sign_up": "S'inscrire",
+            "full_name": "Nom complet (légal)",
+            "email": "E-mail",
+            "password": "Mot de passe",
+            "submit": "S'inscrire",
+            "login": "Connexion",
+            "login_prompt": "Vous avez déjà un compte ?"
         }
     },
     it: {
@@ -48,7 +70,14 @@ const resources = {
             "guide": "Inizia",
             "contact": "Contattaci",
             "contact_description": "Contatta il nostro team per ricevere assistenza.",
-            "select_language": "Seleziona la tua lingua"
+            "select_language": "Seleziona la tua lingua",
+            "sign_up": "Iscriviti",
+            "full_name": "Nome completo (legale)",
+            "email": "Email",
+            "password": "Password",
+            "submit": "Iscriviti",
+            "login": "Accedi",
+            "login_prompt": "Hai già un account?"
         }
     },
     es: {
@@ -60,7 +89,14 @@ const resources = {
             "guide": "Empezar",
             "contact": "Contáctanos",
             "contact_description": "Comunícate con nuestro equipo para obtener asistencia.",
-            "select_language": "Selecciona tu idioma"
+            "select_language": "Selecciona tu idioma",
+            "sign_up": "Registrarse",
+            "full_name": "Nombre completo (legal)",
+            "email": "Correo electrónico",
+            "password": "Contraseña",
+            "submit": "Registrarse",
+            "login": "Iniciar sesión",
+            "login_prompt": "¿Ya tienes una cuenta?"
         }
     },
     ja: {
@@ -72,21 +108,17 @@ const resources = {
             "guide": "始める",
             "contact": "お問い合わせ",
             "contact_description": "サポートが必要な場合はチームに連絡してください。",
-            "select_language": "言語を選択"
+            "select_language": "言語を選択",
+            "sign_up": "サインアップ",
+            "full_name": "フルネーム（法的）",
+            "email": "メールアドレス",
+            "password": "パスワード",
+            "submit": "サインアップ",
+            "login": "ログイン",
+            "login_prompt": "すでにアカウントをお持ちですか？"
         }
     },
-    zh: {
-        translation: {
-            "welcome": "打破医疗领域的语言障碍",
-            "description": "LanMed帮助您生成翻译的医疗表格，确保与医生的清晰沟通。",
-            "about": "关于LanMed",
-            "about_description": "LanMed通过无缝翻译的医疗表格帮助患者和医疗专业人员之间架起沟通的桥梁。",
-            "guide": "开始",
-            "contact": "联系我们",
-            "contact_description": "如需帮助，请联系我们的团队。",
-            "select_language": "选择你的语言"
-        }
-    },
+
     ko: {
         translation: {
             "welcome": "의료에서 언어 장벽을 허물기",
@@ -96,18 +128,50 @@ const resources = {
             "guide": "시작하기",
             "contact": "문의하기",
             "contact_description": "도움이 필요하시면 팀에 문의하세요.",
-            "select_language": "언어 선택"
+            "select_language": "언어 선택",
+            "sign_up": "가입하기",
+            "full_name": "전체 이름 (법적)",
+            "email": "이메일",
+            "password": "비밀번호",
+            "submit": "가입하기",
+            "login": "로그인",
+            "login_prompt": "이미 계정이 있으신가요?"
+        }
+    },
+    
+    zh: {
+        translation: {
+            "welcome": "打破医疗领域的语言障碍",
+            "description": "LanMed帮助您生成翻译的医疗表格，确保与医生的清晰沟通。",
+            "about": "关于LanMed",
+            "about_description": "LanMed通过无缝翻译的医疗表格帮助患者和医疗专业人员之间架起沟通的桥梁。",
+            "guide": "开始",
+            "contact": "联系我们",
+            "contact_description": "如需帮助，请联系我们的团队。",
+            "select_language": "选择你的语言",
+            "sign_up": "注册",
+            "full_name": "全名（法律）",
+            "email": "电子邮件",
+            "password": "密码",
+            "submit": "注册",
+            "login": "登录",
+            "login_prompt": "已有账户？"
         }
     }
 };
 
-// Initialize i18next
+
+// Initialize i18next with Language Detector
 i18n
+    .use(LanguageDetector)  // Automatically detects language
     .use(initReactI18next)
     .init({
         resources,
-        lng: 'en',
-        fallbackLng: 'en',
+        fallbackLng: 'en',  // Use English if the detected language is not available
+        detection: {
+            order: ['localStorage', 'navigator'],  // Detect language from localStorage first, then browser settings
+            caches: ['localStorage']  // Cache language in localStorage
+        },
         interpolation: {
             escapeValue: false
         }
