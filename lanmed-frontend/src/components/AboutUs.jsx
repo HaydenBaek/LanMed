@@ -1,6 +1,6 @@
 import React from 'react';
-import NavbarAfterLogin from './NavbarAfterLogin';
 import { useTranslation } from 'react-i18next';
+import NavbarSwitcher from '../components/NavbarSwitcher';
 
 function AboutUs() {
     const { t } = useTranslation();
@@ -9,7 +9,7 @@ function AboutUs() {
         <div className="min-h-screen bg-light">
             {/* Fixed Navbar */}
             <div className="w-full fixed top-0 left-0 z-50">
-                <NavbarAfterLogin />
+            <NavbarSwitcher />
             </div>
 
             {/* Main About Us Content */}

@@ -9,6 +9,7 @@ import LandingPage from './components/landing';
 import Profile from './components/Profile'
 import CompleteProfile from './components/CompleteProfile';
 import AboutUs from './components/AboutUs';
+import GuidePage from './components/GuidPage';
 
 
 import { useAuth } from './hooks/useAuth';
@@ -36,6 +37,7 @@ function App() {
             <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/signup" />} />
             <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/landing" />} />
             <Route path="/about" element={<AboutUs />} />
+            <Route path="/guide" element={<GuidePage />} />
             <Route path="/complete-profile" element={user ? <CompleteProfile /> : <Navigate to="/signup" />} />
             <Route path="/" element={<Navigate to={user ? "/dashboard" : "/landing"} />} />
           </Routes>

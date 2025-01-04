@@ -4,7 +4,7 @@ import { signOut, updateEmail, updatePassword } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import NavbarAfterLogin from './NavbarAfterLogin';
+import NavbarSwitcher from '../components/NavbarSwitcher';
 
 function ProfilePage() {
     const { t } = useTranslation();
@@ -101,7 +101,7 @@ function ProfilePage() {
         <div className="min-h-screen bg-lighter">
             {/* Navbar */}
             <div className="w-full fixed top-0 left-0 z-50">
-                <NavbarAfterLogin />
+            <NavbarSwitcher />
             </div>
 
             {/* Profile Form */}

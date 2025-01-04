@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { auth } from '../firebase';
@@ -6,7 +6,7 @@ import { auth } from '../firebase';
 function Navbar() {
     const { t, i18n } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const user = auth.currentUser;
+    const [user, setUser] = useState(null);  // Track user state
 
     const handleLanguageChange = (e) => {
         const newLanguage = e.target.value;
@@ -16,20 +16,33 @@ function Navbar() {
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-    React.useEffect(() => {
-        const savedLanguage = localStorage.getItem('selectedLanguage');
-        if (savedLanguage && savedLanguage !== i18n.language) {
-            i18n.changeLanguage(savedLanguage);
-        }
-    }, [i18n]);
+    // Listen for authentication changes
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+            setUser(currentUser);
+        });
+
+        // Cleanup the listener when the component unmounts
+        return () => unsubscribe();
+    }, []);
 
     return (
         <nav className="bg-primary w-full border-b-2 border-secondary">
             <div className="flex flex-wrap items-center justify-between p-4 w-full">
-                {/* Logo */}
-                <Link to="/" className="flex items-center space-x-3">
+                <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                     <span className="self-center text-2xl font-semibold text-white">LanMed</span>
                 </Link>
+
+                {/* Mobile Hamburger Button */}
+                <button
+                    onClick={toggleMenu}
+                    className="inline-flex items-center p-2 w-10 h-10 justify-center text-white rounded-lg md:hidden hover:bg-secondary"
+                >
+                    <span className="sr-only">Open main menu</span>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
 
                 {/* Language Selector */}
                 <div className="flex md:order-2">
@@ -47,33 +60,35 @@ function Navbar() {
                     </select>
                 </div>
 
-                {/* Hamburger Button (Mobile) */}
-                <button
-                    onClick={toggleMenu}
-                    className="inline-flex items-center p-2 w-10 h-10 justify-center text-white rounded-lg md:hidden hover:bg-secondary"
-                >
-                    <span className="sr-only">Open main menu</span>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-
                 {/* Desktop View Links */}
-                <div className="hidden w-full md:flex md:w-auto md:order-1 justify-between space-x-16">
-                    <ul className="flex flex-row p-4 md:p-0 mt-4 font-medium border border-accent rounded-lg bg-light md:mt-0 md:border-0">
+                <div className="hidden w-full md:flex md:w-auto md:order-1 justify-between">
+                    <ul className="flex flex-row w-full md:space-x-20 px-10 md:px-0 mt-4 font-medium border border-accent rounded-lg bg-light md:mt-0 md:border-0">
                         <li>
-                            <Link to="/" className="py-2 px-3 text-white hover:bg-secondary rounded">{t('home', 'Home')}</Link>
+                            <Link to="/" className="py-2 px-4 text-white hover:bg-secondary rounded">
+                                {t('home', 'Home')}
+                            </Link>
                         </li>
                         <li>
-                            <Link to="/about" className="py-2 px-3 text-white hover:bg-secondary rounded">{t('about', 'About')}</Link>
+                            <Link to="/guide" className="py-2 px-4 text-white hover:bg-secondary rounded">
+                                {t('guide', 'Guide')}
+                            </Link>
                         </li>
                         <li>
-                            <Link to="/guide" className="py-2 px-3 text-white hover:bg-secondary rounded">{t('guide', 'Guide')}</Link>
+                            <Link to="/about" className="py-2 px-4 text-white hover:bg-secondary rounded">
+                                {t('about', 'About Us')}
+                            </Link>
                         </li>
+                        {user && (
+                            <li>
+                                <Link to="/profile" className="py-2 px-4 text-white hover:bg-secondary rounded">
+                                    {t('profile', 'Profile')}
+                                </Link>
+                            </li>
+                        )}
                     </ul>
                 </div>
 
-                {/* Mobile View Dropdown Menu */}
+                {/* Mobile Dropdown Menu */}
                 {isMenuOpen && (
                     <div className="w-full md:hidden">
                         <ul className="flex flex-col p-4 mt-4 border border-accent rounded-lg bg-light">
@@ -88,15 +103,6 @@ function Navbar() {
                             </li>
                             <li>
                                 <Link
-                                    to="/about"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="py-2 px-3 block text-white hover:bg-secondary rounded"
-                                >
-                                    {t('about', 'About')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
                                     to="/guide"
                                     onClick={() => setIsMenuOpen(false)}
                                     className="py-2 px-3 block text-white hover:bg-secondary rounded"
@@ -104,33 +110,21 @@ function Navbar() {
                                     {t('guide', 'Guide')}
                                 </Link>
                             </li>
-                            {!user ? (
-                                <>
-                                    <li>
-                                        <Link
-                                            to="/signup"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="py-2 px-4 block bg-accent text-white rounded hover:bg-secondary"
-                                        >
-                                            {t('sign_up', 'Sign Up')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            to="/login"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="py-2 px-4 block bg-secondary text-white rounded hover:bg-light"
-                                        >
-                                            {t('login', 'Login')}
-                                        </Link>
-                                    </li>
-                                </>
-                            ) : (
+                            <li>
+                                <Link
+                                    to="/about"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="py-2 px-3 block text-white hover:bg-secondary rounded"
+                                >
+                                    {t('about', 'About Us')}
+                                </Link>
+                            </li>
+                            {user && (
                                 <li>
                                     <Link
                                         to="/profile"
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="py-2 px-4 block bg-secondary text-white rounded hover:bg-light"
+                                        className="py-2 px-3 block text-white hover:bg-secondary rounded"
                                     >
                                         {t('profile', 'Profile')}
                                     </Link>
