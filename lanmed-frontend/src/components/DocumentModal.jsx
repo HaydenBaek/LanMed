@@ -22,7 +22,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
         language: 'en'
     };
 
-    
+
 
 
     const [step, setStep] = useState(0);
@@ -33,7 +33,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
 
     const fetchUserData = async () => {
         const user = auth.currentUser;
-        
+
         if (user) {
             try {
                 const docRef = doc(db, 'users', user.uid);
@@ -55,7 +55,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
     useEffect(() => {
         fetchUserData();
     }, []);
-    
+
 
 
     const handleChange = (e) => {
@@ -87,17 +87,17 @@ const DocumentModal = ({ isOpen, onClose }) => {
     };
 
 
-    
+
 
 
     const handleTranslateAndSubmit = async (t) => {
         if (user) {
             const docRef = doc(db, 'users', user.uid);
             const docSnap = await getDoc(docRef);
-    
+
             if (docSnap.exists()) {
                 const data = docSnap.data();
-    
+
                 // Translate user data fields
                 const [
                     translatedName,
@@ -112,7 +112,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
                     translateText(data.medications || 'None', formData.language),
                     translateText(data.surgeries || 'None', formData.language)
                 ]);
-    
+
                 const translatedUserData = {
                     ...data,
                     translatedName,
@@ -121,7 +121,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
                     translatedMedications,
                     translatedSurgeries
                 };
-    
+
                 // Translate form data fields
                 const [
                     translatedSymptoms,
@@ -134,10 +134,10 @@ const DocumentModal = ({ isOpen, onClose }) => {
                     translateText(formData.notes, formData.language),
                     translateText(formData.medicationTaken, formData.language)
                 ]);
-    
+
                 // Create a PDF name (use user name and date for uniqueness)
                 const pdfName = `${translatedName}_${new Date().toISOString().slice(0, 10)}`;
-    
+
                 const finalData = {
                     ...translatedUserData,
                     ...formData,
@@ -148,17 +148,17 @@ const DocumentModal = ({ isOpen, onClose }) => {
                     pdfName,
                     createdAt: new Date()
                 };
-    
+
                 try {
-                    
+
                     await addDoc(collection(db, `users/${user.uid}/documents`), {
                         documentData: finalData,
                         pdfName: pdfName,
                         createdAt: new Date()
                     });
-    
-    
-                    
+
+
+
                     generatePDF(finalData, translatedUserData, t, i18n.language, formData.language, pdfName);
                 } catch (error) {
                     console.error('Error saving document:', error);
@@ -169,8 +169,8 @@ const DocumentModal = ({ isOpen, onClose }) => {
             }
         }
     };
-    
-    
+
+
 
     const resetForm = () => {
         setFormData(initialFormState);
@@ -201,10 +201,10 @@ const DocumentModal = ({ isOpen, onClose }) => {
             />
 
             <h2 className="text-xl font-bold mt-6">{t('your_information')}</h2>
-                    <p><strong>{t('name')}:</strong> {userData.name || t('na')}</p>
-                    <p><strong>{t('age')}:</strong> {userData.age || t('na')}</p>
-                    <p><strong>{t('allergies')}:</strong> {userData.allergies || t('none')}</p>
-                    <p><strong>{t('medications')}:</strong> {userData.medications || t('none')}</p>
+            <p><strong>{t('name')}:</strong> {userData.name || t('na')}</p>
+            <p><strong>{t('age')}:</strong> {userData.age || t('na')}</p>
+            <p><strong>{t('allergies')}:</strong> {userData.allergies || t('none')}</p>
+            <p><strong>{t('medications')}:</strong> {userData.medications || t('none')}</p>
         </div>,
 
         // Step 2 - Symptom Description
@@ -300,7 +300,35 @@ const DocumentModal = ({ isOpen, onClose }) => {
                 className="w-full p-2 border rounded"
             >
                 <option value="en">English</option>
-                <option value="ko">한국어</option>
+                <option value="ko">한국어 (Korean)</option>
+                <option value="de">Deutsch (German)</option>
+                <option value="fr">Français (French)</option>
+                <option value="es">Español (Spanish)</option>
+                <option value="ja">日本語 (Japanese)</option>
+                <option value="zh">中文 (Simplified Chinese)</option>
+                <option value="it">Italiano (Italian)</option>
+                <option value="nl">Nederlands (Dutch)</option>
+                <option value="pl">Polski (Polish)</option>
+                <option value="ru">Русский (Russian)</option>
+                <option value="pt">Português (Portuguese)</option>
+                <option value="ar">العربية (Arabic)</option>
+                <option value="sv">Svenska (Swedish)</option>
+                <option value="tr">Türkçe (Turkish)</option>
+                <option value="el">Ελληνικά (Greek)</option>
+                <option value="hu">Magyar (Hungarian)</option>
+                <option value="ro">Română (Romanian)</option>
+                <option value="fi">Suomi (Finnish)</option>
+                <option value="da">Dansk (Danish)</option>
+                <option value="bg">Български (Bulgarian)</option>
+                <option value="cs">Čeština (Czech)</option>
+                <option value="et">Eesti (Estonian)</option>
+                <option value="lt">Lietuvių (Lithuanian)</option>
+                <option value="lv">Latviešu (Latvian)</option>
+                <option value="sl">Slovenščina (Slovenian)</option>
+                <option value="sk">Slovenčina (Slovak)</option>
+                <option value="id">Bahasa Indonesia (Indonesian)</option>
+                <option value="uk">Українська (Ukrainian)</option>
+                <option value="no">Norsk Bokmål (Norwegian)</option>
             </select>
         </div>
     ];
