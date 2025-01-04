@@ -250,8 +250,16 @@ const DocumentModal = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+        <div
+            className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center"
+            onClick={() => {
+                onClose();  // Close modal and go back to the dashboard
+            }}
+        >
+            <div
+                className="bg-white p-8 rounded-lg shadow-lg w-96"
+                onClick={(e) => e.stopPropagation()}  // Prevent closing when clicking inside the modal
+            >
                 {components[step]}
                 <div className="flex justify-between mt-6">
                     {step > 0 && (
@@ -282,6 +290,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
             </div>
         </div>
     );
+    
 }
 
 export default DocumentModal;

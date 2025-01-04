@@ -1,10 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+//pages
 import SignUpForm from './components/SignUpForm';
 import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import LandingPage from './components/landing';
+import Profile from './components/Profile'
 import CompleteProfile from './components/CompleteProfile';
+import AboutUs from './components/AboutUs';
+
+
 import { useAuth } from './hooks/useAuth';
 import './i18n';  // Import the i18n configuration
 
@@ -28,6 +34,8 @@ function App() {
             <Route path="/signup" element={!user ? <SignUpForm /> : <Navigate to="/dashboard" />} />
             <Route path="/login" element={!user ? <LoginForm /> : <Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/signup" />} />
+            <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/landing" />} />
+            <Route path="/about" element={<AboutUs />} />
             <Route path="/complete-profile" element={user ? <CompleteProfile /> : <Navigate to="/signup" />} />
             <Route path="/" element={<Navigate to={user ? "/dashboard" : "/landing"} />} />
           </Routes>

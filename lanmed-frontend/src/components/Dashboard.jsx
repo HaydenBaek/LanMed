@@ -3,9 +3,10 @@ import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import DocumentModal from './DocumentModal';
 import { useTranslation } from 'react-i18next';
+import NavBarAfterLogin from './NavbarAfterLogin';
 
 function Dashboard() {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [userData, setUserData] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const user = auth.currentUser;
@@ -48,32 +49,40 @@ function Dashboard() {
     };
 
     return (
-        <>
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <div className="p-2 text-primary">
-                    <h1 className="text-3xl font-bold">
-                        {t('welcome_dashboard', { name: userData?.name || user?.displayName || 'LanMed' })}
-                    </h1>
-                    <p className="mt-4">{t('translator_description')}</p>
+        <div className="min-h-screen bg-lighter">
+            {/* Fixed Navbar */}
+            <div className="w-full fixed top-0 left-0 z-50">
+                <NavBarAfterLogin />
+            </div>
+    
+            {/* Main Dashboard Content */}
+            <div className="flex flex-col items-center mt-32 px-6"> {/* Add margin-top to avoid overlap */}
+                <div className="bg-white p-10 rounded-lg shadow-lg max-w-2xl w-full text-center">
+                    <div className="p-2 text-primary">
+                        <h1 className="text-4xl font-bold">
+                            {t('welcome_dashboard', { name: userData?.name || user?.displayName || 'LanMed' })}
+                        </h1>
+                        <p className="mt-4 text-lg">{t('translator_description')}</p>
+                    </div>
                 </div>
+    
+                {/* Button to Open Modal */}
+                <div className="mt-10">
+                    <button
+                        onClick={openModal}
+                        className="relative inline-flex items-center justify-center p-1 mb-2 me-2 overflow-hidden text-lg font-medium text-white rounded-lg group bg-gradient-to-br from-primary to-secondary group-hover:from-secondary group-hover:to-accent hover:text-white focus:ring-4 focus:outline-none focus:ring-accent"
+                    >
+                        <span className="relative px-12 py-6 flex items-center space-x-3 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">
+                            <span className="text-4xl font-bold">+</span>
+                            <span className="text-xl">{t('create_document')}</span>
+                        </span>
+                    </button>
+                </div>
+    
+                {/* Document Modal */}
+                <DocumentModal isOpen={isModalOpen} onClose={closeModal} />
             </div>
-
-            {/* Button to Open Modal */}
-            <div className="mt-8">
-                <button
-                    onClick={openModal}
-                    className="relative inline-flex items-center justify-center p-1 mb-2 me-2 overflow-hidden text-lg font-medium text-white rounded-lg group bg-gradient-to-br from-primary to-secondary group-hover:from-secondary group-hover:to-accent hover:text-white focus:ring-4 focus:outline-none focus:ring-accent dark:focus:ring-light"
-                >
-                    <span className="relative px-8 py-6 flex items-center space-x-3 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">
-                        <span className="text-4xl font-bold">+</span>
-                        <span className="text-xl">{t('create_document')}</span>
-                    </span>
-                </button>
-            </div>
-
-            {/* Document Modal */}
-            <DocumentModal isOpen={isModalOpen} onClose={closeModal} />
-        </>
+        </div>
     );
 }
 

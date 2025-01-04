@@ -20,7 +20,13 @@ const resources = {
             "password": "Password",
             "submit": "Sign Up",
             "login": "Log in",
-            "login_prompt": "Already have an account?"
+            "login_prompt": "Already have an account?",
+            "about_us_title": "About LanMed",
+            "about_us_paragraph1": "LanMed was created from a personal experience that highlighted the importance of overcoming language barriers in healthcare. As an immigrant from Korea living in Canada, I often accompanied a family member to the hospital because English wasn’t her first language. While this was manageable during high school, it became challenging when I moved to Vancouver for college.",
+            "about_us_paragraph2": "Knowing that my family member couldn’t confidently seek medical attention alone made me realize the need for a simple solution. LanMed was built to help her and others like her – individuals who need to convey medical concerns but struggle with language barriers. With LanMed, users can pre-answer common questions from doctors and provide translated documents during their visits, ensuring clearer communication.",
+            "who_i_am": "Who I Am",
+            "about_us_paragraph3": "I’m a 1st-year Computer Science student in Vancouver. This project is more than just an app – it’s a tool I built to support my family and hopefully help others facing similar challenges.",
+            "contact_me": "Contact Me",
         }
     },
     de: {
@@ -125,7 +131,7 @@ const resources = {
             "description": "LanMed는 번역된 의료 양식을 생성하여 어디서든 의사와 명확하게 소통할 수 있도록 돕습니다.",
             "about": "LanMed 소개",
             "about_description": "LanMed는 환자와 의료 전문가 간의 커뮤니케이션 격차를 해소합니다.",
-            "guide": "시작하기",
+            "guide": "사용법",
             "contact": "문의하기",
             "contact_description": "도움이 필요하시면 팀에 문의하세요.",
             "select_language": "언어 선택",
@@ -179,8 +185,16 @@ const resources = {
             "previous": "이전",
             "next": "다음",
             "make_pdf": "PDF 생성",
-        "enter_medication": "복용한 약 입력",
-        "none_if_none": "'없음'이라고 입력"
+            "enter_medication": "복용한 약 입력",
+            "none_if_none": "'없음'이라고 입력",
+            "profile": "프로필",
+            "about_us_title": "LanMed 소개",
+            "about_us_paragraph1": "LanMed는 의료 분야에서 언어 장벽을 극복하는 것의 중요성을 직접 경험한 후에 만들어졌습니다. 캐나다에 사는 한국 출신 이민자로서, 저는 영어가 능숙하지 않은 가족 구성원과 함께 번역을 도와주러 병원에 자주 동반했습니다. 고등학교에 다닐 때는 문제가 없었지만, 밴쿠버로 대학을 가면서 더 이상 쉽게 도와줄 수 없었습니다.",
+            "about_us_paragraph2": "가족이 혼자서 병원을 자신 있게 방문하지 못한다는 사실은 간단한 해결책이 필요하다는 것을 깨닫게 했습니다. LanMed는 저희 가족과 같은 사람들을 돕기 위해 만들어졌습니다. 사용자들은 사전에 의사가 자주 묻는 질문에 답하고, 번역된 문서를 통해 진료 시 명확하게 소통할 수 있습니다.",
+            "who_i_am": "제 소개",
+            "about_us_paragraph3": "저는 밴쿠버에서 컴퓨터 공학을 전공하는 1학년 학생입니다. 이 프로젝트는 단순한 앱이 아니라, 가족을 돕기 위해 만든 도구이며, 비슷한 어려움을 겪는 다른 사람들에게도 도움이 되기를 바랍니다.",
+            "contact_me": "문의하기",
+            "about_us_contact": "더 알고 싶거나 협업하고 싶다면 언제든지 연락해 주세요:"
 
 
         }
