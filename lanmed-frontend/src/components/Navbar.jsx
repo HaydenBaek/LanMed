@@ -64,6 +64,8 @@ function Navbar() {
                         <option value="ar">العربية (Arabic)</option>
                         <option value="po">Polski (Polish)</option>
                         <option value="tr">Türkçe (Turkish)h</option>
+                        <option value="it">Italiano</option>
+
 
 
 
