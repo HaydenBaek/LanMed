@@ -13,11 +13,11 @@ function LandingPage() {
     }, [i18n]);
 
     return (
-        <div className="bg-timberwolf min-h-screen">
+        <div className="bg-timberwolf min-h-screen w-full fixed top-0 left-0 z-50">
             <NavbarSwitcher/>
             <div className="flex items-center justify-center h-[calc(100vh-100px)]">
                 <div className="bg-white p-16 rounded-xl shadow-2xl text-center max-w-4xl w-full">
-                    <h1 className="text-6xl font-bold text-hunter-green mb-8">
+                    <h1 className="text-5xl font-bold text-hunter-green mb-8">
                         {t('welcome')}
                     </h1>
                     <p className="text-xl text-fern-green mb-10">

@@ -69,7 +69,28 @@ const resources = {
             "who_i_am": "Who I Am",
             "about_us_paragraph3": "I am a first-year computer science student in Vancouver. This project is not just an app but a tool created to help my family, and I hope it helps others facing similar challenges.",
             "contact_me": "Contact Me",
-            "about_us_contact": "Feel free to reach out if you want to know more or collaborate:"
+            "about_us_contact": "Feel free to reach out if you want to know more or collaborate:",
+            "past surgeries" : "past surgeries",
+            "patient_report_title": "Patient Medical Report",
+            "name": "Name",
+            "dob": "Date of Birth",
+            "age": "Age",
+            "allergies": "Allergies",
+            "medications": "Medications",
+            "surgeries": "Past Surgeries",
+            "none": "None",
+            "patient_report_title": "Patient Medical Report",
+            "name": "Name",
+            "dob": "Date of Birth",
+            "age": "Age",
+            "allergies": "Allergies",
+            "medications": "Medications",
+            "surgeries": "Past Surgeries",
+            "none": "None",
+            "na": "N/A",
+            "make_pdf": "Generate PDF"
+            
+
         }
 
     },
@@ -190,9 +211,9 @@ const resources = {
             "dob": "생년월일",
             "age": "나이",
             "years": "세",
-            "allergies_placeholder": "알레르기 (없다면 없음)",
-            "medications_placeholder": "현재 복용 중인 약물 (없다면 없음)",
-            "surgeries_placeholder": "과거 수술 (없다면 없음)",
+            "allergies_placeholder": "알레르기 (없다면 '없음'이라고 입력)",
+            "medications_placeholder": "현재 복용 중인 약물 (없다면 '없음'이라고 입력)",
+            "surgeries_placeholder": "과거 수술 (없다면 '없음'이라고 입력)",
             "save_profile": "프로필 저장",
             "user_not_authenticated": "사용자가 인증되지 않았습니다",
             "profile_update_failed": "프로필을 완료하지 못했습니다",
@@ -254,7 +275,26 @@ const resources = {
             "no_documents": "문서가 없습니다",
             "document_preview": "문서 미리보기",
             "document_not_found": "문서를 찾을 수 없습니다",
-            "close": "닫기"
+            "close": "닫기",
+            "update_profile": "프로필 업데이트 하기",
+            "logout": "로그아웃",
+            "past surgeries": "과거 수술 이력",
+            "profile_updated_successfully": "프로필 업데이트 성공",
+            "patient_report_title": "환자 진료 보고서",
+            "name": "이름",
+            "dob": "생년월일",
+            "age": "나이",
+            "allergies": "알레르기",
+            "medications": "약물",
+            "surgeries": "과거 수술",
+            "none": "없음",
+            "N/A": "해당 없음",
+            "symptom_description": "증상 설명",
+            "severity": "심각도 (1-10)",
+            "medication_taken": "증상을 위해 복용한 약",
+            "questions_for_doctor": "의사에게 할 질문",
+            
+        
         }
         
     },

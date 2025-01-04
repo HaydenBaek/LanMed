@@ -3,6 +3,7 @@ import { auth, db } from '../firebase';
 import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import generatePDF from './generatePDF';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 
 const DocumentModal = ({ isOpen, onClose }) => {
     const { t } = useTranslation();
@@ -15,45 +16,20 @@ const DocumentModal = ({ isOpen, onClose }) => {
         severity: '',
         doctorQuestions: '',
         notes: '',
+        medicationTaken: '',
         translatedSymptoms: '',
         translatedQuestions: '',
         language: 'en'
     };
+
 
     const [step, setStep] = useState(0);
     const [formData, setFormData] = useState(initialFormState);
     const [userData, setUserData] = useState({});
     const [isTranslating, setIsTranslating] = useState(false);
     const user = auth.currentUser;
+    
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            if (user) {
-                const docRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    setUserData(docSnap.data());
-                } else {
-                    console.warn('No user data found in Firestore. Falling back to Firebase Auth...');
-
-                    // Fallback to Firebase Auth data
-                    const authUser = auth.currentUser;
-                    if (authUser) {
-                        setUserData({
-                            name: authUser.displayName || 'Unknown',
-                            email: authUser.email || 'No email',
-                            uid: authUser.uid
-                        });
-                    } else {
-                        console.error('No user data available from Auth.');
-                    }
-                }
-            }
-        };
-
-        fetchUserData();
-    }, [user]);
 
     const handleChange = (e) => {
         setFormData({
@@ -84,42 +60,68 @@ const DocumentModal = ({ isOpen, onClose }) => {
     };
 
 
-    const handleTranslateAndSubmit = async () => {
-        if (!userData || !userData.name) {
-            console.error('User data is missing or incomplete.');
-            alert('User data is not available. Please complete your profile first.');
-            return;
+
+    const handleTranslateAndSubmit = async (t) => {
+        if (user) {
+            const docRef = doc(db, 'users', user.uid);
+            const docSnap = await getDoc(docRef);
+    
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+    
+                // Translate user data fields
+                const [
+                    translatedName,
+                    translatedDob,
+                    translatedAllergies,
+                    translatedMedications,
+                    translatedSurgeries
+                ] = await Promise.all([
+                    translateText(data.name, formData.language),
+                    translateText(data.dob, formData.language),
+                    translateText(data.allergies || 'None', formData.language),
+                    translateText(data.medications || 'None', formData.language),
+                    translateText(data.surgeries || 'None', formData.language)
+                ]);
+    
+                const translatedUserData = {
+                    ...data,
+                    translatedName,
+                    translatedDob,
+                    translatedAllergies,
+                    translatedMedications,
+                    translatedSurgeries
+                };
+    
+                // Translate form data fields
+                const [
+                    translatedSymptoms,
+                    translatedQuestions,
+                    translatedNotes,
+                    translatedMedicationTaken
+                ] = await Promise.all([
+                    translateText(formData.symptoms, formData.language),
+                    translateText(formData.doctorQuestions, formData.language),
+                    translateText(formData.notes, formData.language),
+                    translateText(formData.medicationTaken, formData.language)
+                ]);
+    
+                const finalData = {
+                    ...translatedUserData,
+                    ...formData,
+                    translatedSymptoms,
+                    translatedQuestions,
+                    translatedNotes,
+                    translatedMedicationTaken,
+                    createdAt: new Date()
+                };
+    
+                // Pass modal language and navbar language
+                generatePDF(finalData, translatedUserData, t, i18n.language, formData.language);
+            } else {
+                console.warn('No user data found.');
+            }
         }
-    
-        setIsTranslating(true);
-    
-        const [translatedSymptoms, translatedQuestions, translatedNotes] = await Promise.all([
-            translateText(formData.symptoms),
-            translateText(formData.doctorQuestions),
-            translateText(formData.notes)  // Add translation for notes
-        ]);
-    
-        const finalData = {
-            ...userData,
-            ...formData,
-            translatedSymptoms,
-            translatedQuestions,
-            translatedNotes,  // Add translated notes
-            createdAt: new Date()
-        };
-    
-        try {
-            const docRef = await addDoc(collection(db, `users/${user.uid}/documents`), finalData);
-            console.log('Document created with ID:', docRef.id);
-    
-            await generatePDF(finalData, userData);  // Pass userData as a second argument
-    
-            resetForm();
-            onClose();
-        } catch (error) {
-            console.error('Error saving document:', error);
-        }
-        setIsTranslating(false);
     };
     
 
@@ -199,13 +201,13 @@ const DocumentModal = ({ isOpen, onClose }) => {
 
             <h2 className="text-2xl font-bold mt-6">{t('medication_taken')}</h2>
             <input
-            type="text"
-            name="medicationTaken"
-            value={formData.medicationTaken}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-            placeholder={t('enter_medication')}
+                type="text"
+                name="medicationTaken"
+                value={formData.medicationTaken}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+                placeholder={t('enter_medication')}
             />
 
         </div>,
@@ -280,17 +282,18 @@ const DocumentModal = ({ isOpen, onClose }) => {
                     )}
                     {step === components.length - 1 && (
                         <button
-                            onClick={handleTranslateAndSubmit}
+                            onClick={() => handleTranslateAndSubmit(t)}
                             className="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-lg font-medium transition duration-200"
                         >
                             {t('make_pdf')}
                         </button>
+
                     )}
                 </div>
             </div>
         </div>
     );
-    
+
 }
 
 export default DocumentModal;

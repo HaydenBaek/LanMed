@@ -160,7 +160,7 @@ function ProfilePage() {
                                 value={formData.allergies}
                                 onChange={handleChange}
                                 className="w-full p-3 border rounded"
-                                placeholder={t('none_if_none')}
+                                placeholder={t('allergies_placeholder')}
                             ></textarea>
                         </div>
 
@@ -172,19 +172,19 @@ function ProfilePage() {
                                 value={formData.medications}
                                 onChange={handleChange}
                                 className="w-full p-3 border rounded"
-                                placeholder={t('none_if_none')}
+                                placeholder={t('medications_placeholder')}
                             ></textarea>
                         </div>
 
                         {/* Surgeries */}
                         <div>
-                            <label className="block text-lg font-medium">{t('surgeries')}</label>
+                            <label className="block text-lg font-medium">{t('past surgeries')}</label>
                             <textarea
                                 name="surgeries"
                                 value={formData.surgeries}
                                 onChange={handleChange}
                                 className="w-full p-3 border rounded"
-                                placeholder={t('none_if_none')}
+                                placeholder={t('surgeries_placeholder')}
                             ></textarea>
                         </div>
 
