@@ -1,6 +1,16 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import NavbarSwitcher from '../components/NavbarSwitcher';
+
+// Import images
+import step1 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-tduz.png';
+import step11 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-sqmx-2.png';
+import step2 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-sxmb.png';
+import step3 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-syaq.png';
+import step4 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-syqi.png';
+import step5 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-tcem.png';
+import step6 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-tdcz.png';
+
 function GuidePage() {
     const { t } = useTranslation();
 
@@ -8,7 +18,7 @@ function GuidePage() {
         <div className="min-h-screen bg-lighter">
             {/* Navbar */}
             <div className="w-full fixed top-0 left-0 z-50">
-            <NavbarSwitcher />
+                <NavbarSwitcher />
             </div>
 
             {/* Main Content */}
@@ -21,37 +31,76 @@ function GuidePage() {
                         {t('guide_intro', 'LanMed helps you generate translated medical forms easily. Follow the steps below to get started.')}
                     </p>
 
-                    <div className="space-y-6">
+                    <div className="space-y-12">
+                        {/* Step 1 - Choose Language and Start */}
                         <div>
-                            <h2 className="text-2xl font-semibold text-primary mb-2">{t('step1', 'Step 1: Sign Up')}</h2>
-                            <p className="text-md text-secondary">
-                                {t('step1_description', 'Create an account by signing up with your email.')}
+                            <h2 className="text-2xl font-semibold text-primary mt-6">
+                                {t('step1', 'Step 1: Choose Language and Start')}
+                            </h2>
+                            <p className="text-md text-secondary mt-2">
+                                {t('step1_description', 'Select your preferred language and click the "Start" button.')}
                             </p>
+                            <img src={step1} alt="Choose Language and Start" className="rounded-lg shadow-md w-full mt-6" />
+                            <img src={step11} alt="Language Selection Example" className="rounded-lg shadow-md w-full mt-6" />
                         </div>
 
+                        {/* Step 2 - Sign Up or Login */}
                         <div>
-                            <h2 className="text-2xl font-semibold text-primary mb-2">{t('step2', 'Step 2: Complete Your Profile')}</h2>
-                            <p className="text-md text-secondary">
-                                {t('step2_description', 'Fill out your personal information, including medical history.')}
+                            <h2 className="text-2xl font-semibold text-primary mt-6">
+                                {t('step2', 'Step 2: Sign Up or Login')}
+                            </h2>
+                            <p className="text-md text-secondary mt-2">
+                                {t('step2_description', 'Create an account or log in if you already have one.')}
                             </p>
+                            <img src={step2} alt="Sign Up or Login" className="rounded-lg shadow-md w-full mt-6" />
                         </div>
 
+                        {/* Step 3 - Complete Profile */}
                         <div>
-                            <h2 className="text-2xl font-semibold text-primary mb-2">{t('step3', 'Step 3: Create a Document')}</h2>
-                            <p className="text-md text-secondary">
-                                {t('step3_description', 'Click the "Create Document" button on the dashboard and answer the questions.')}
+                            <h2 className="text-2xl font-semibold text-primary mt-6">
+                                {t('step3', 'Step 3: Complete Your Profile')}
+                            </h2>
+                            <p className="text-md text-secondary mt-2">
+                                {t('step3_description', 'Fill out your personal information, including medical history.')}
                             </p>
+                            <img src={step3} alt="Complete Profile" className="rounded-lg shadow-md w-full mt-6" />
                         </div>
 
+                        {/* Step 4 - Create Document */}
                         <div>
-                            <h2 className="text-2xl font-semibold text-primary mb-2">{t('step4', 'Step 4: Translate and Print')}</h2>
-                            <p className="text-md text-secondary">
-                                {t('step4_description', 'Select the target language, then generate and print the translated form.')}
+                            <h2 className="text-2xl font-semibold text-primary mt-6">
+                                {t('step4', 'Step 4: Create a Document')}
+                            </h2>
+                            <p className="text-md text-secondary mt-2">
+                                {t('step4_description', 'Click the "Create Document" button on the dashboard and answer the questions.')}
                             </p>
+                            <img src={step4} alt="Create Document" className="rounded-lg shadow-md w-full mt-6" />
+                        </div>
+
+                        {/* Step 5 - Finish the Survey */}
+                        <div>
+                            <h2 className="text-2xl font-semibold text-primary mt-6">
+                                {t('step5', 'Step 5: Finish the Survey')}
+                            </h2>
+                            <p className="text-md text-secondary mt-2">
+                                {t('step5_description', 'Answer the health-related questions to complete your document.')}
+                            </p>
+                            <img src={step5} alt="Finish the Survey" className="rounded-lg shadow-md w-full mt-6" />
+                        </div>
+
+                        {/* Step 6 - Choose PDF Language */}
+                        <div>
+                            <h2 className="text-2xl font-semibold text-primary mt-6">
+                                {t('step6', 'Step 6: Choose PDF Language')}
+                            </h2>
+                            <p className="text-md text-secondary mt-2">
+                                {t('step6_description', 'Select the language in which you want your PDF to be translated.')}
+                            </p>
+                            <img src={step6} alt="Choose PDF Language" className="rounded-lg shadow-md w-full mt-6" />
                         </div>
                     </div>
 
-                    <p className="text-lg font-medium text-accent text-center mt-10">
+                    <p className="text-lg font-medium text-accent text-center mt-12">
                         {t('need_help', 'Need further assistance? Contact us at hayden111712@gmail.com')}
                     </p>
                 </div>

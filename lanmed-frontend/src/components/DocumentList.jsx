@@ -2,32 +2,53 @@ import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
 import { collection, getDocs, doc, deleteDoc, getDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
+import Swal from 'sweetalert2';
+import { onAuthStateChanged } from 'firebase/auth';
+import jsPDF from 'jspdf';
 
 function DocumentList() {
     const { t } = useTranslation();
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedDocument, setSelectedDocument] = useState(null);
-    const user = auth.currentUser;
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const fetchDocuments = async () => {
-            if (user) {
-                try {
-                    const docRef = collection(db, `users/${user.uid}/documents`);
-                    const docSnap = await getDocs(docRef);
-                    const docList = docSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    setDocuments(docList);
-                } catch (error) {
-                    console.error("Error fetching documents:", error);
-                }
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            if (currentUser) {
+                fetchDocuments(currentUser.uid);
+            } else {
+                setDocuments([]);
                 setLoading(false);
             }
-        };
-        fetchDocuments();
-    }, [user]);
+        });
 
-    // View Document in Modal
+        return () => unsubscribe();
+    }, []);
+
+    const fetchDocuments = async (userId) => {
+        try {
+            setLoading(true);
+            const docRef = collection(db, `users/${userId}/documents`);
+            const docSnap = await getDocs(docRef);
+
+            if (docSnap.empty) {
+                console.warn('No documents found.');
+            } else {
+                const docList = docSnap.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    createdAt: doc.data().createdAt || null
+                }));
+                setDocuments(docList);
+            }
+        } catch (error) {
+            console.error("Error fetching documents:", error);
+        }
+        setLoading(false);
+    };
+
     const handleView = async (id) => {
         try {
             const docRef = doc(db, `users/${user.uid}/documents/${id}`);
@@ -36,14 +57,80 @@ function DocumentList() {
             if (docSnap.exists()) {
                 setSelectedDocument(docSnap.data());
             } else {
-                alert(t('document_not_found', 'Document not found.'));
+                Swal.fire({
+                    icon: 'error',
+                    title: t('document_not_found', 'Document not found.')
+                });
             }
         } catch (error) {
             console.error("Error viewing document:", error);
         }
     };
 
-    // Close Modal
+    const handleDownload = (docData) => {
+        const pdf = new jsPDF();
+        pdf.setFontSize(16);
+        pdf.text("Document Details", 10, 10);
+        pdf.setFontSize(12);
+
+        const content = [
+            `Name: ${docData.documentData.translatedName || 'N/A'}`,
+            `DOB: ${docData.documentData.translatedDob || 'N/A'}`,
+            `Allergies: ${docData.documentData.translatedAllergies || 'None'}`,
+            `Medications: ${docData.documentData.translatedMedications || 'None'}`,
+            `Symptoms: ${docData.documentData.translatedSymptoms || 'N/A'}`,
+            `Doctor Questions: ${docData.documentData.translatedQuestions || 'N/A'}`,
+            `Notes: ${docData.documentData.translatedNotes || 'None'}`
+        ];
+
+        content.forEach((line, i) => {
+            pdf.text(line, 10, 30 + i * 10);
+        });
+
+        pdf.save(`${docData.pdfName || 'document'}.pdf`);
+
+        Swal.fire({
+            icon: 'success',
+            title: t('download_starting', 'Download Starting...'),
+            timer: 1500,
+            showConfirmButton: false,
+        });
+    };
+
+    const handleDelete = async (id) => {
+        const result = await Swal.fire({
+            title: t('confirm_delete', 'Are you sure you want to delete this document?'),
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: t('delete', 'Delete'),
+            cancelButtonText: t('cancel', 'Cancel'),
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const docRef = doc(db, `users/${user.uid}/documents/${id}`);
+                await deleteDoc(docRef);
+
+                setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
+
+                Swal.fire({
+                    icon: 'success',
+                    title: t('document_deleted', 'Document deleted successfully.'),
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            } catch (error) {
+                console.error("Error deleting document:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: t('delete_failed', 'Failed to delete document.'),
+                });
+            }
+        }
+    };
+
     const closeModal = () => {
         setSelectedDocument(null);
     };
@@ -62,26 +149,19 @@ function DocumentList() {
                                 <div>
                                     <h3 className="text-lg font-semibold">{doc.pdfName || t('unknown_document', 'Untitled Document')}</h3>
                                     <p className="text-sm text-secondary">
-                                        {new Date(doc.createdAt.seconds * 1000).toLocaleDateString()}
+                                        {doc.createdAt?.seconds
+                                            ? new Date(doc.createdAt.seconds * 1000).toLocaleDateString()
+                                            : t('unknown_date')}
                                     </p>
                                 </div>
                                 <div className="flex space-x-4">
-                                    <button
-                                        onClick={() => handleView(doc.id)}
-                                        className="text-blue-500 hover:underline"
-                                    >
+                                    <button onClick={() => handleView(doc.id)} className="text-blue-500 hover:underline">
                                         {t('view', 'View')}
                                     </button>
-                                    <button
-                                        onClick={() => handleDownload(doc.id)}
-                                        className="text-green-500 hover:underline"
-                                    >
+                                    <button onClick={() => handleDownload(doc)} className="text-green-500 hover:underline">
                                         {t('download', 'Download')}
                                     </button>
-                                    <button
-                                        onClick={() => handleDelete(doc.id)}
-                                        className="text-red-500 hover:underline"
-                                    >
+                                    <button onClick={() => handleDelete(doc.id)} className="text-red-500 hover:underline">
                                         {t('delete', 'Delete')}
                                     </button>
                                 </div>
@@ -93,21 +173,22 @@ function DocumentList() {
                 <p className="text-secondary">{t('no_documents', 'No documents found.')}</p>
             )}
 
-            {/* Modal to Preview Document */}
             {selectedDocument && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-8 rounded-lg shadow-lg max-w-xl w-full">
-                        <h2 className="text-2xl font-bold text-primary mb-4">{t('document_preview', 'Document Preview')}</h2>
-                        <p><strong>{t('name')}:</strong> {selectedDocument.pdfName || t('unknown')}</p>
-                        <p><strong>{t('dob')}:</strong> {selectedDocument.dob || t('na')}</p>
-                        <p><strong>{t('allergies')}:</strong> {selectedDocument.allergies || t('none')}</p>
-                        <p><strong>{t('medications')}:</strong> {selectedDocument.medications || t('none')}</p>
-                        <p><strong>{t('symptoms')}:</strong> {selectedDocument.symptoms || t('na')}</p>
-                        <p><strong>{t('symptom_start_date')}:</strong> {selectedDocument.symptomStartDate || t('na')}</p>
-                        <p><strong>{t('symptom_start_time')}:</strong> {selectedDocument.symptomStartTime || t('na')}</p>
-                        <p><strong>{t('medication_taken')}:</strong> {selectedDocument.medicationTaken || t('none')}</p>
-                        <p><strong>{t('doctor_questions')}:</strong> {selectedDocument.doctorQuestions || t('none')}</p>
-                        <p><strong>{t('additional_notes')}:</strong> {selectedDocument.notes || t('none')}</p>
+                        <h2 className="text-2xl font-bold text-primary mb-4">
+                            {t('document_preview', 'Document Preview')}
+                        </h2>
+                        <p><strong>{t('name')}:</strong> {selectedDocument.documentData?.pdfName || t('unknown')}</p>
+                        <p><strong>{t('dob')}:</strong> {selectedDocument.documentData?.dob || t('na')}</p>
+                        <p><strong>{t('allergies')}:</strong> {selectedDocument.documentData?.allergies || t('none')}</p>
+                        <p><strong>{t('medications')}:</strong> {selectedDocument.documentData?.medications || t('none')}</p>
+                        <p><strong>{t('describe_symptoms')}:</strong> {selectedDocument.documentData?.symptoms || t('na')}</p>
+                        <p><strong>{t('symptom_start_date')}:</strong> {selectedDocument.documentData?.symptomStartDate || t('na')}</p>
+                        <p><strong>{t('symptom_start_time')}:</strong> {selectedDocument.documentData?.symptomStartTime || t('na')}</p>
+                        <p><strong>{t('medication_taken')}:</strong> {selectedDocument.documentData?.medicationTaken || t('none')}</p>
+                        <p><strong>{t('doctor_questions')}:</strong> {selectedDocument.documentData?.doctorQuestions || t('none')}</p>
+                        <p><strong>{t('additional_notes')}:</strong> {selectedDocument.documentData?.notes || t('none')}</p>
 
 
                         <div className="flex justify-end mt-6">
@@ -121,6 +202,8 @@ function DocumentList() {
                     </div>
                 </div>
             )}
+
+
         </div>
     );
 }

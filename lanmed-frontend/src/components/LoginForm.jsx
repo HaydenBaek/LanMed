@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import checkFirstTimeLogin from '../utils/checkFirstTimeLogin';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';  // Ensure i18n is imported
@@ -41,11 +41,11 @@ function LoginForm() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+    <div className="mt-20 bg-white p-8 rounded-lg shadow-lg w-96">
       <h1 className="text-3xl font-bold text-primary mb-6 text-center">
         {t('login')}
       </h1>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} className="space-y-4" >
         <input
           type="email"
           placeholder={t('email')}
@@ -70,8 +70,11 @@ function LoginForm() {
         </button>
       </form>
       {error && <p className="text-red-500 mt-4">{error}</p>}
-      <p className="text-sm text-primary mt-4">
-        {t('login_prompt')}
+      <p className="text-sm text-primary">
+        {t('signup_prompt')}{' '}
+        <Link to="/signup" className="text-accent hover:underline">
+          {t('signup')}
+        </Link>
       </p>
     </div>
   );

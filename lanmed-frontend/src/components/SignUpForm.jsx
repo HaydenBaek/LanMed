@@ -37,7 +37,7 @@ function SignUpForm() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+    <div className="mt-20 bg-white p-8  rounded-lg shadow-lg w-96">
       <h1 className="text-3xl font-bold text-primary mb-6 text-center">{t('sign_up')}</h1>
       <form onSubmit={handleSignUp} className="space-y-4">
         <input

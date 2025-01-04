@@ -17,61 +17,76 @@ const generatePDF = async (formData, userData, t, uiLanguage, targetLanguage) =>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">  
         <title>Medical Report</title>  
         <script src="https://cdn.tailwindcss.com"></script>  
-        <style>  
-            :root {  
-                --primary: #4a6741;  
-                --secondary: #3f5a36;  
-                --accent: #374f2f;  
-                --light: #304529;  
-                --lighter: #22311d;  
-            }  
-            body {  
-                font-family: 'Arial', sans-serif;  
-                background-color: var(--lighter);  
-                color: white;  
-                margin: 0;  
-                padding: 0;  
-                line-height: 1.5;  
-            }  
-            @page {  
-                size: A4;  
-                margin: 20mm;  
-            }  
-            .container {  
-                width: 100%;  
-                margin: 0 auto;  
-                padding: 30px;  
-                border-radius: 12px;  
-                background-color: var(--light);  
-            }  
-            .header, .footer {  
-                background-color: var(--secondary);  
-                padding: 20px;  
-                border-radius: 8px;  
-                margin-bottom: 25px;  
-            }  
-            .section {  
-                margin-bottom: 30px;  
-                padding: 20px;  
-                background-color: var(--accent);  
-                border-radius: 8px;  
-            }  
-            h1, h2, h3 {  
-                color: white;  
-                font-weight: bold;  
-            }  
-            h1 { font-size: 2.2rem; }  
-            h2 { font-size: 1.7rem; }  
-            h3 { font-size: 1.4rem; }  
-            p { font-size: 1rem; }  
-            .input-box {  
-                background-color: white;  
-                color: var(--lighter);  
-                padding: 10px;  
-                border-radius: 6px;  
-                margin: 10px 0;  
-            }  
-        </style>  
+
+
+<style>  
+    :root {  
+        --primary: #4a6741;  
+        --secondary: #3f5a36;  
+        --accent: #374f2f;  
+        --light: #304529;  
+    }  
+    html, body {  
+        font-family: 'Arial', sans-serif;  
+        background-color: var(--light);  
+        color: white;  
+        margin: 0;  
+        padding: 0;  
+        height: 100%;  
+        width: 100%;  
+        box-sizing: border-box;  
+    }  
+    @page {  
+        size: A4;  
+        margin: 0;  
+    }  
+    .container {  
+        width: 100%;  
+        min-height: calc(103vh); 
+        margin: 0;  
+        padding: 32px 28px;  
+        background-color: var(--light);  
+        box-sizing: border-box;  
+        display: flex;  
+        flex-direction: column;  
+        justify-content: space-between;  
+    }  
+    .header, .footer {  
+        background-color: var(--secondary);  
+        padding: 26px;  
+        text-align: center;  
+    }  
+    .section {  
+        flex-grow: 1;  
+        padding: 20px 25px;  
+        margin: 18px 0;  
+        background-color: var(--accent);  
+        border-radius: 6px;  
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);  
+    }  
+    h1, h2, h3 {  
+        color: white;  
+        font-weight: bold;  
+        margin: 6px 0;  
+    }  
+    h1 { font-size: 2.3rem; }  
+    h2 { font-size: 1.7rem; }  
+    h3 { font-size: 1.4rem; }  
+    p { font-size: 1rem; margin: 8px 0; }  
+    .input-box {  
+        background-color: white;  
+        color: var(--light);  
+        padding: 15px;  
+        border-radius: 8px;  
+        margin: 12px 0;  
+        border: 1px solid var(--secondary);  
+        line-height: 1.6;  
+        font-size: 1rem;  
+    }  
+</style>
+
+
+
     </head>  
     <body>
 

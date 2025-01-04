@@ -22,12 +22,39 @@ const DocumentModal = ({ isOpen, onClose }) => {
         language: 'en'
     };
 
+    
+
 
     const [step, setStep] = useState(0);
     const [formData, setFormData] = useState(initialFormState);
     const [userData, setUserData] = useState({});
     const [isTranslating, setIsTranslating] = useState(false);
     const user = auth.currentUser;
+
+    const fetchUserData = async () => {
+        const user = auth.currentUser;
+        
+        if (user) {
+            try {
+                const docRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    setUserData(docSnap.data());  // Set data directly
+                } else {
+                    console.log('No user data found');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchUserData();
+    }, []);
     
 
 
@@ -59,6 +86,8 @@ const DocumentModal = ({ isOpen, onClose }) => {
         }
     };
 
+
+    
 
 
     const handleTranslateAndSubmit = async (t) => {
@@ -106,6 +135,9 @@ const DocumentModal = ({ isOpen, onClose }) => {
                     translateText(formData.medicationTaken, formData.language)
                 ]);
     
+                // Create a PDF name (use user name and date for uniqueness)
+                const pdfName = `${translatedName}_${new Date().toISOString().slice(0, 10)}`;
+    
                 const finalData = {
                     ...translatedUserData,
                     ...formData,
@@ -113,23 +145,46 @@ const DocumentModal = ({ isOpen, onClose }) => {
                     translatedQuestions,
                     translatedNotes,
                     translatedMedicationTaken,
+                    pdfName,
                     createdAt: new Date()
                 };
     
-                // Pass modal language and navbar language
-                generatePDF(finalData, translatedUserData, t, i18n.language, formData.language);
+                try {
+                    
+                    await addDoc(collection(db, `users/${user.uid}/documents`), {
+                        documentData: finalData,
+                        pdfName: pdfName,
+                        createdAt: new Date()
+                    });
+    
+    
+                    
+                    generatePDF(finalData, translatedUserData, t, i18n.language, formData.language, pdfName);
+                } catch (error) {
+                    console.error('Error saving document:', error);
+                    alert('Failed to save document.');
+                }
             } else {
                 console.warn('No user data found.');
             }
         }
     };
     
-
+    
 
     const resetForm = () => {
         setFormData(initialFormState);
         setStep(0);
     };
+
+
+    const handleBackdropClick = (e) => {
+        if (e.target === e.currentTarget) {
+            resetForm();
+            onClose();
+        }
+    };
+
 
     const components = [
         // Step 1 - Document Naming and User Info
@@ -144,11 +199,12 @@ const DocumentModal = ({ isOpen, onClose }) => {
                 className="w-full p-2 border rounded"
                 required
             />
+
             <h2 className="text-xl font-bold mt-6">{t('your_information')}</h2>
-            <p><strong>{t('name')}:</strong> {userData.name || t('na')}</p>
-            <p><strong>{t('age')}:</strong> {userData.age || t('na')}</p>
-            <p><strong>{t('allergies')}:</strong> {userData.allergies || t('none')}</p>
-            <p><strong>{t('medications')}:</strong> {userData.medications || t('none')}</p>
+                    <p><strong>{t('name')}:</strong> {userData.name || t('na')}</p>
+                    <p><strong>{t('age')}:</strong> {userData.age || t('na')}</p>
+                    <p><strong>{t('allergies')}:</strong> {userData.allergies || t('none')}</p>
+                    <p><strong>{t('medications')}:</strong> {userData.medications || t('none')}</p>
         </div>,
 
         // Step 2 - Symptom Description
@@ -254,10 +310,9 @@ const DocumentModal = ({ isOpen, onClose }) => {
     return (
         <div
             className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center"
-            onClick={() => {
-                onClose();  // Close modal and go back to the dashboard
-            }}
+            onClick={handleBackdropClick}
         >
+
             <div
                 className="bg-white p-8 rounded-lg shadow-lg w-96"
                 onClick={(e) => e.stopPropagation()}  // Prevent closing when clicking inside the modal

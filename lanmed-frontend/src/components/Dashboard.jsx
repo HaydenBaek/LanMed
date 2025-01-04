@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import DocumentModal from './DocumentModal';
-import DocumentList from './DocumentList';  // Import DocumentList component
+import DocumentList from './DocumentList';
 import { useTranslation } from 'react-i18next';
 import NavbarSwitcher from '../components/NavbarSwitcher';
 
 function Dashboard() {
+
+    const [selectedDocument, setSelectedDocument] = useState(null);
+
     const { t } = useTranslation();
     const [userData, setUserData] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const user = auth.currentUser;
 
     useEffect(() => {
@@ -28,6 +30,10 @@ function Dashboard() {
         fetchUserData();
     }, [user]);
 
+
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const openModal = () => {
         setIsModalOpen(true);
     };
@@ -36,11 +42,14 @@ function Dashboard() {
         setIsModalOpen(false);
     };
 
+
+
+
     return (
         <div className="min-h-screen bg-lighter">
             {/* Fixed Navbar */}
             <div className="w-full fixed top-0 left-0 z-50">
-            <NavbarSwitcher />
+                <NavbarSwitcher />
             </div>
 
             {/* Main Dashboard Content */}
@@ -74,7 +83,12 @@ function Dashboard() {
                 </div>
 
                 {/* Document Modal */}
-                <DocumentModal isOpen={isModalOpen} onClose={closeModal} />
+                <DocumentModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                    document={selectedDocument}
+                />
+
             </div>
         </div>
     );

@@ -27,7 +27,7 @@ function LandingPage() {
                         to="/signup"
                         className="px-8 py-4 bg-primary text-white rounded-lg hover:bg-secondary transition duration-200 text-lg"
                     >
-                        {t('guide')}
+                        {t('start')}
                     </Link>
                 </div>
             </div>

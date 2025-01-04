@@ -1,4 +1,5 @@
 import React from 'react';
+import NavbarAfterLogin from './NavbarAfterLogin';
 import { useTranslation } from 'react-i18next';
 import NavbarSwitcher from '../components/NavbarSwitcher';
 

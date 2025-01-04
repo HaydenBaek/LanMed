@@ -57,6 +57,17 @@ function Navbar() {
                         <option value="fr">Français</option>
                         <option value="es">Español</option>
                         <option value="ko">한국어</option>
+                        <option value="ja">日本語</option>
+                        <option value="zh">中文 (简体)</option>
+                        <option value="pt1">Português (Brasil)</option>
+                        <option value="pj">ਪੰਜਾਬੀ (Punjabi)</option>
+                        <option value="ar">العربية (Arabic)</option>
+                        <option value="po">Polski (Polish)</option>
+                        <option value="tr">Türkçe (Turkish)h</option>
+
+
+
+
                     </select>
                 </div>
 
