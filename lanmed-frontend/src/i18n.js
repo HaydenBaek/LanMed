@@ -264,7 +264,7 @@ const resources = {
         }
 
     },
-//for a deployment.
+//for a deploymenttt.
     de: {
         translation: {
             "welcome": "Jenseits von Sprachbarrieren – Gesundheitsversorgung für alle",
