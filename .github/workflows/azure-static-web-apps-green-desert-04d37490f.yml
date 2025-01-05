@@ -15,23 +15,43 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
+      # Checkout the source code from the repository
       - uses: actions/checkout@v3
         with:
           submodules: true
           lfs: false
+          
+      # Install dependencies for the React/Vite app
+      - name: Install Dependencies
+        run: npm install
+        working-directory: lanmed-frontend
+      
+      # Debug to ensure environment variables are passed correctly
+      - name: Log Environment Variables (Debugging)
+        run: |
+          echo "VITE_API_KEY=${{ secrets.VITE_API_KEY }}"
+          echo "VITE_AUTH_DOMAIN=${{ secrets.VITE_AUTH_DOMAIN }}"
+          echo "VITE_PROJECT_ID=${{ secrets.VITE_PROJECT_ID }}"
+        working-directory: lanmed-frontend
+      
+      # Build and Deploy the app to Azure Static Web Apps
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GREEN_DESERT_04D37490F }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          repo_token: ${{ secrets.GITHUB_TOKEN }}  # Used for GitHub integrations (PR comments)
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "./lanmed-frontend" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "dist" # Built app content directory - optional
-          ###### End of Repository/Build Configurations ######
+          app_location: "./lanmed-frontend"        # Path to the app source code
+          api_location: ""                         # Optional - API path if using Azure Functions
+          output_location: "dist"                  # Vite outputs to 'dist' by default
+        env:                                       # Pass environment variables to the build process
+          VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
+          VITE_AUTH_DOMAIN: ${{ secrets.VITE_AUTH_DOMAIN }}
+          VITE_PROJECT_ID: ${{ secrets.VITE_PROJECT_ID }}
+          VITE_STORAGE_BUCKET: ${{ secrets.VITE_STORAGE_BUCKET }}
+          VITE_MESSAGING_SENDER_ID: ${{ secrets.VITE_MESSAGING_SENDER_ID }}
+          VITE_APP_ID: ${{ secrets.VITE_APP_ID }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
