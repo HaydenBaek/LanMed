@@ -4,7 +4,7 @@ import { signOut, updateEmail, updatePassword } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import NavbarSwitcher from '../components/NavbarSwitcher';
+import NavbarSwitcher from './NavbarSwitcher';
 import Swal from 'sweetalert2';
 
 

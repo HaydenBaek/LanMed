@@ -4,7 +4,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import DocumentModal from './DocumentModal';
 import DocumentList from './DocumentList';
 import { useTranslation } from 'react-i18next';
-import NavbarSwitcher from '../components/NavbarSwitcher';
+import NavbarSwitcher from './NavbarSwitcher';
 
 function Dashboard() {
 

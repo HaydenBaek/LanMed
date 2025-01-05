@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import NavbarSwitcher from '../components/NavbarSwitcher';
+import NavbarSwitcher from './NavbarSwitcher';
 
 // Import images
 import step1 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-tduz.png';
