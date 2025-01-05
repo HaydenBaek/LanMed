@@ -3,13 +3,16 @@ import { useTranslation } from 'react-i18next';
 import NavbarSwitcher from './NavbarSwitcher';
 
 // Import images
-import step1 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-tduz.png';
-import step11 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-sqmx-2.png';
-import step2 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-sxmb.png';
-import step3 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-syaq.png';
-import step4 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-syqi.png';
-import step5 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-tcem.png';
-import step6 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-tdcz.png';
+import step1 from '../images/SCR-20250103-tduz.png';
+import step11 from '../images/SCR-20250103-sqmx-2.png';
+import step2 from '../images/SCR-20250103-sxmb.png';
+import step3 from '../images/SCR-20250103-syaq.png';
+import step4 from '../images/SCR-20250103-syqi.png';
+import step5 from '../images/SCR-20250103-tcem.png';
+import step6 from '../images/SCR-20250103-tdcz.png';
+// import step6 from '/Users/haydenbaek/Desktop/side_projects/LanMed2/lanmed-frontend/src/images/SCR-20250103-tdcz.png';
+
+
 
 function GuidePage() {
     const { t } = useTranslation();
