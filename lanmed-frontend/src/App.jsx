@@ -12,7 +12,7 @@ import AboutUs from './components/AboutUs';
 import GuidePage from './components/GuidPage';
 
 
-import { useAuth } from './hooks/useAuth';
+import { useAuth } from '../src/hooks/UseAuth';
 import './i18n';  // Import the i18n configuration
 
 function App() {
