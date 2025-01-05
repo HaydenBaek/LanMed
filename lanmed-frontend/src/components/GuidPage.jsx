@@ -98,6 +98,25 @@ function GuidePage() {
                             </p>
                             <img src={step6} alt="Choose PDF Language" className="rounded-lg shadow-md w-full mt-6" />
                         </div>
+
+                        {/* Step 7 - Watch Tutorial Video */}
+                        <div>
+                            <h2 className="text-2xl font-semibold text-primary mt-6">
+                                {t('step7', 'Step 7: Watch the Tutorial Video')}
+                            </h2>
+                            <p className="text-md text-secondary mt-2">
+                                {t('step7_description', 'Watch this tutorial video for a visual guide on using LanMed.')}
+                            </p>
+                            <div className="relative pb-56 h-0" style={{ paddingBottom: '56.25%' }}>
+                                <iframe 
+                                    className="absolute top-0 left-0 w-full h-full rounded-lg"
+                                    src="https://www.youtube.com/embed/h987jU2X0MA"
+                                    title="LanMed Tutorial Video"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
+                        </div>
                     </div>
 
                     <p className="text-lg font-medium text-accent text-center mt-12">
