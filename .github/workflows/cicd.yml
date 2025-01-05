@@ -18,18 +18,16 @@ jobs:
           node-version: '18.x'
 
       - name: Install Dependencies
-        run: |
-          cd lanmed-frontend
-          npm install
+        run: npm install
+        working-directory: lanmed-frontend
 
       - name: Build React App
-        run: |
-          cd lanmed-frontend
-          npm run build
+        run: npm run build
+        working-directory: lanmed-frontend
 
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
           app-name: LanMed2
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: lanmed-frontend/build  # Deploy the correct build folder
+          package: lanmed-frontend/build  # Or dist if using Vite
