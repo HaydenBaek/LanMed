@@ -30,4 +30,4 @@ jobs:
         with:
           app-name: LanMed2
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: lanmed-frontend/build  # Or dist if using Vite
+          package: lanmed-frontend/dist  # or build if vite.config.js is updated
