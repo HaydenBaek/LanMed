@@ -1,6 +1,5 @@
 import html2pdf from 'html2pdf.js';
-import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+
 
 
 
@@ -53,7 +52,7 @@ const generatePDF = async (formData, userData, t, uiLanguage, targetLanguage) =>
     }  
     .header, .footer {  
         background-color: var(--secondary);  
-        padding: 26px;  
+        padding: 20px;  
         text-align: center;  
     }  
     .section {  

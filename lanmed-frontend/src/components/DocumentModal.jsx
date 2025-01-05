@@ -114,10 +114,10 @@ const DocumentModal = ({ isOpen, onClose }) => {
             setIsTranslating(true);  // Set loading state
             const docRef = doc(db, 'users', user.uid);
             const docSnap = await getDoc(docRef);
-
+    
             if (docSnap.exists()) {
                 const data = docSnap.data();
-
+    
                 try {
                     // Translate user data fields
                     const [
@@ -133,7 +133,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
                         translateText(data.medications || 'None', formData.language),
                         translateText(data.surgeries || 'None', formData.language)
                     ]);
-
+    
                     const translatedUserData = {
                         ...data,
                         translatedName,
@@ -142,7 +142,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
                         translatedMedications,
                         translatedSurgeries
                     };
-
+    
                     // Translate form data fields
                     const [
                         translatedSymptoms,
@@ -155,8 +155,10 @@ const DocumentModal = ({ isOpen, onClose }) => {
                         translateText(formData.notes, formData.language),
                         translateText(formData.medicationTaken, formData.language)
                     ]);
-
-                    const pdfName = `${translatedName}_${new Date().toISOString().slice(0, 10)}`;
+    
+                    // Use PDF name from formData if provided, otherwise fallback to original name
+                    const pdfName = formData.pdfName || `${data.name}_${new Date().toISOString().slice(0, 10)}`;
+                    
                     const finalData = {
                         ...translatedUserData,
                         ...formData,
@@ -167,13 +169,13 @@ const DocumentModal = ({ isOpen, onClose }) => {
                         pdfName,
                         createdAt: new Date()
                     };
-
+    
                     await addDoc(collection(db, `users/${user.uid}/documents`), {
                         documentData: finalData,
                         pdfName: pdfName,
                         createdAt: new Date()
                     });
-
+    
                     generatePDF(finalData, translatedUserData, t, i18n.language, formData.language, pdfName);
                 } catch (error) {
                     console.error('Error saving document:', error);
@@ -187,6 +189,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
             }
         }
     };
+    
 
 
 
