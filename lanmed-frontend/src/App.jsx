@@ -10,6 +10,7 @@ import Profile from './components/Profile'
 import CompleteProfile from './components/CompleteProfile';
 import AboutUs from './components/AboutUs';
 import GuidePage from './components/GuidPage';
+import NotFoundPage from './components/NotFoundPage';
 
 
 import { useAuth } from '../src/hooks/UseAuth';
@@ -38,6 +39,7 @@ function App() {
             <Route path="/Profile" element={user ? <Profile /> : <Navigate to="/landing" />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/guide" element={<GuidePage />} />
+            <Route path="*" element={<NotFoundPage />} /> 
             <Route path="/complete-profile" element={user ? <CompleteProfile /> : <Navigate to="/signup" />} />
             <Route path="/" element={<Navigate to={user ? "/dashboard" : "/landing"} />} />
           </Routes>
