@@ -28,7 +28,6 @@ const DocumentModal = ({ isOpen, onClose }) => {
     const [step, setStep] = useState(0);
     const [formData, setFormData] = useState(initialFormState);
     const [userData, setUserData] = useState({});
-    const [isTranslating, setIsTranslating] = useState(false);
     const user = auth.currentUser;
 
     const fetchUserData = async () => {
@@ -66,16 +65,32 @@ const DocumentModal = ({ isOpen, onClose }) => {
     };
 
     const translateText = async (text) => {
-        const sourceLang = 'KO';  // DeepL uses language codes like 'EN', 'DE', 'KO', etc.
-        const targetLang = formData.language.toUpperCase();  // Ensure the target language is in uppercase
+        if (!text || text.trim() === '') {
+            console.warn("Empty text, skipping translation.");
+            return text;
+        }
+    
+        // Use selected source language or default to English
+        const sourceLang = formData.sourceLanguage || 'EN';  
+        const targetLang = formData.language.toUpperCase();  // Target language from your existing dropdown
         const apiKey = import.meta.env.VITE_DEEPL_API_KEY;
+    
         const apiUrl = `https://api-free.deepl.com/v2/translate?auth_key=${apiKey}&text=${encodeURIComponent(text)}&source_lang=${sourceLang}&target_lang=${targetLang}`;
+    
         try {
             const res = await fetch(apiUrl);
-            const result = await res.json();
-
-            if (result && result.translations && result.translations[0]) {
-                return result.translations[0].text;
+            const responseBody = await res.json();
+    
+            console.log('DeepL Response Status:', res.status);
+            console.log('DeepL Response Body:', responseBody);
+    
+            if (!res.ok) {
+                console.error('DeepL API Error:', responseBody.message);
+                return `Translation error: ${responseBody.message || 'Unknown error'}`;
+            }
+    
+            if (responseBody.translations && responseBody.translations[0]) {
+                return responseBody.translations[0].text;
             } else {
                 console.error("Translation failed.");
                 return text;
@@ -85,71 +100,73 @@ const DocumentModal = ({ isOpen, onClose }) => {
             return text;
         }
     };
+    
 
 
 
 
+
+
+    const [isTranslating, setIsTranslating] = useState(false);
 
     const handleTranslateAndSubmit = async (t) => {
         if (user) {
+            setIsTranslating(true);  // Set loading state
             const docRef = doc(db, 'users', user.uid);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
 
-                // Translate user data fields
-                const [
-                    translatedName,
-                    translatedDob,
-                    translatedAllergies,
-                    translatedMedications,
-                    translatedSurgeries
-                ] = await Promise.all([
-                    translateText(data.name, formData.language),
-                    translateText(data.dob, formData.language),
-                    translateText(data.allergies || 'None', formData.language),
-                    translateText(data.medications || 'None', formData.language),
-                    translateText(data.surgeries || 'None', formData.language)
-                ]);
-
-                const translatedUserData = {
-                    ...data,
-                    translatedName,
-                    translatedDob,
-                    translatedAllergies,
-                    translatedMedications,
-                    translatedSurgeries
-                };
-
-                // Translate form data fields
-                const [
-                    translatedSymptoms,
-                    translatedQuestions,
-                    translatedNotes,
-                    translatedMedicationTaken
-                ] = await Promise.all([
-                    translateText(formData.symptoms, formData.language),
-                    translateText(formData.doctorQuestions, formData.language),
-                    translateText(formData.notes, formData.language),
-                    translateText(formData.medicationTaken, formData.language)
-                ]);
-
-                // Create a PDF name (use user name and date for uniqueness)
-                const pdfName = `${translatedName}_${new Date().toISOString().slice(0, 10)}`;
-
-                const finalData = {
-                    ...translatedUserData,
-                    ...formData,
-                    translatedSymptoms,
-                    translatedQuestions,
-                    translatedNotes,
-                    translatedMedicationTaken,
-                    pdfName,
-                    createdAt: new Date()
-                };
-
                 try {
+                    // Translate user data fields
+                    const [
+                        translatedName,
+                        translatedDob,
+                        translatedAllergies,
+                        translatedMedications,
+                        translatedSurgeries
+                    ] = await Promise.all([
+                        translateText(data.name, formData.language),
+                        translateText(data.dob, formData.language),
+                        translateText(data.allergies || 'None', formData.language),
+                        translateText(data.medications || 'None', formData.language),
+                        translateText(data.surgeries || 'None', formData.language)
+                    ]);
+
+                    const translatedUserData = {
+                        ...data,
+                        translatedName,
+                        translatedDob,
+                        translatedAllergies,
+                        translatedMedications,
+                        translatedSurgeries
+                    };
+
+                    // Translate form data fields
+                    const [
+                        translatedSymptoms,
+                        translatedQuestions,
+                        translatedNotes,
+                        translatedMedicationTaken
+                    ] = await Promise.all([
+                        translateText(formData.symptoms, formData.language),
+                        translateText(formData.doctorQuestions, formData.language),
+                        translateText(formData.notes, formData.language),
+                        translateText(formData.medicationTaken, formData.language)
+                    ]);
+
+                    const pdfName = `${translatedName}_${new Date().toISOString().slice(0, 10)}`;
+                    const finalData = {
+                        ...translatedUserData,
+                        ...formData,
+                        translatedSymptoms,
+                        translatedQuestions,
+                        translatedNotes,
+                        translatedMedicationTaken,
+                        pdfName,
+                        createdAt: new Date()
+                    };
 
                     await addDoc(collection(db, `users/${user.uid}/documents`), {
                         documentData: finalData,
@@ -157,18 +174,20 @@ const DocumentModal = ({ isOpen, onClose }) => {
                         createdAt: new Date()
                     });
 
-
-
                     generatePDF(finalData, translatedUserData, t, i18n.language, formData.language, pdfName);
                 } catch (error) {
                     console.error('Error saving document:', error);
                     alert('Failed to save document.');
+                } finally {
+                    setIsTranslating(false);  // Reset loading state
                 }
             } else {
                 console.warn('No user data found.');
+                setIsTranslating(false);
             }
         }
     };
+
 
 
 
@@ -292,6 +311,46 @@ const DocumentModal = ({ isOpen, onClose }) => {
         // Step 5 - Translation Selection
         <div key="step5">
             <h2 className="text-2xl font-bold mb-4">{t('translate_document')}</h2>
+
+            <label>{t('select_source_language')}:</label>
+            <select
+                name="sourceLanguage"
+                value={formData.sourceLanguage}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+            >
+                <option value="en">English</option>
+                <option value="ko">한국어 (Korean)</option>
+                <option value="de">Deutsch (German)</option>
+                <option value="fr">Français (French)</option>
+                <option value="es">Español (Spanish)</option>
+                <option value="ja">日本語 (Japanese)</option>
+                <option value="zh">中文 (Simplified Chinese)</option>
+                <option value="it">Italiano (Italian)</option>
+                <option value="nl">Nederlands (Dutch)</option>
+                <option value="pl">Polski (Polish)</option>
+                <option value="ru">Русский (Russian)</option>
+                <option value="pt">Português (Portuguese)</option>
+                <option value="ar">العربية (Arabic)</option>
+                <option value="sv">Svenska (Swedish)</option>
+                <option value="tr">Türkçe (Turkish)</option>
+                <option value="el">Ελληνικά (Greek)</option>
+                <option value="hu">Magyar (Hungarian)</option>
+                <option value="ro">Română (Romanian)</option>
+                <option value="fi">Suomi (Finnish)</option>
+                <option value="da">Dansk (Danish)</option>
+                <option value="bg">Български (Bulgarian)</option>
+                <option value="cs">Čeština (Czech)</option>
+                <option value="et">Eesti (Estonian)</option>
+                <option value="lt">Lietuvių (Lithuanian)</option>
+                <option value="lv">Latviešu (Latvian)</option>
+                <option value="sl">Slovenščina (Slovenian)</option>
+                <option value="sk">Slovenčina (Slovak)</option>
+                <option value="id">Bahasa Indonesia (Indonesian)</option>
+                <option value="uk">Українська (Ukrainian)</option>
+                <option value="no">Norsk Bokmål (Norwegian)</option>
+            </select>
+
             <label>{t('select_translation_language')}:</label>
             <select
                 name="language"

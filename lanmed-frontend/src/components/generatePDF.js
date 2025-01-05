@@ -109,13 +109,13 @@ const generatePDF = async (formData, userData, t, uiLanguage, targetLanguage) =>
         </div>
 
         <div class="section">
-            <h2>${t('symptom_description', 'Symptom Description', { lng: targetLanguage })}</h2>
+            <h2>${t('describe_symptoms', 'Symptom Description', { lng: targetLanguage })}</h2>
             <p class="input-box">${formData.translatedSymptoms || 'N/A'}</p>
-            <h2>${t('severity', 'Severity (1-10)', { lng: targetLanguage })}</h2>
+            <h2>${t('symptom_severity', 'Severity (1-10)', { lng: targetLanguage })}</h2>
             <p class="input-box">${formData.severity || 'N/A'}</p>
             <h2>${t('medication_taken', 'Medications taken for Symptoms', { lng: targetLanguage })}</h2>
             <p class="input-box">${formData.translatedMedicationTaken || 'No'}</p>
-            <h2>${t('questions_for_doctor', 'Questions for Doctor', { lng: targetLanguage })}</h2>
+            <h2>${t('doctor_questions', 'Questions for Doctor', { lng: targetLanguage })}</h2>
             <p class="input-box">${formData.translatedQuestions || 'N/A'}</p>
             <h2>${t('additional_notes', 'Additional Notes', { lng: targetLanguage })}</h2>
             <p class="input-box">${formData.translatedNotes || 'N/A'}</p>
@@ -145,7 +145,7 @@ const generatePDF = async (formData, userData, t, uiLanguage, targetLanguage) =>
     </div>
 
     <div class="section">
-        <h2>${t('symptom_description', 'Symptom Description', { lng: uiLanguage })}</h2>
+        <h2>${t('describe_symptoms', 'Symptom Description', { lng: uiLanguage })}</h2>
         <p class="input-box">${formData.symptoms || 'N/A'}</p>
         <h2>${t('severity', 'Severity (1-10)', { lng: uiLanguage })}</h2>
         <p class="input-box">${formData.severity || 'N/A'}</p>
