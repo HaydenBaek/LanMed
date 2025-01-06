@@ -36,8 +36,8 @@ npm start
 ## Config
 Create a `.env` file:
 ```env
-FIREBASE_API_KEY=your_key
-DEEPL_API_KEY=your_key
+VITE_FIREBASE_API_KEY=your_key
+VITE_DEEPL_API_KEY=your_key
 ```
 
 ## Usage
