@@ -6,6 +6,9 @@ LanMed helps people communicate with doctors by generating translated medical fo
 ## Demo Video
 [Watch the demo](https://www.youtube.com/watch?v=wMBsw8J_37M)
 
+### Website Link
+[LanMed Website](https://lanmed3-grfhbrbffrhfhwg2.canadacentral-01.azurewebsites.net)  *(Note: The app uses the free DeepL API and Microsoft Azure's free plan. This may result in translation issues as Microsoft requires an upgrade to use external REST APIs.)*
+
 ## Features
 - **User Registration** – Collect personal and health info.
 - **Symptom Reports** – Describe symptoms for translation.
