@@ -113,7 +113,7 @@ function GuidePage() {
                             <div className="relative pb-56 h-0" style={{ paddingBottom: '56.25%' }}>
                                 <iframe 
                                     className="absolute top-0 left-0 w-full h-full rounded-lg"
-                                    src="https://www.youtube.com/embed/h987jU2X0MA"
+                                    src="https://www.youtube.com/embed/wMBsw8J_37M"
                                     title="LanMed Tutorial Video"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen
