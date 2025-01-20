@@ -1,4 +1,4 @@
-# LanMed Web App
+![image](https://github.com/user-attachments/assets/85537ad7-d8ad-434f-9390-e8d191f53b3b)# LanMed Web App
 
 ## Overview
 LanMed helps people communicate with doctors by generating translated medical forms. Users input details and symptoms, and the app translates and formats them. The site supports 10+ languages, and PDFs can be translated into 30+ languages using DeepL API.
@@ -6,7 +6,7 @@ LanMed helps people communicate with doctors by generating translated medical fo
 ## Demo Video
 [Watch the demo](https://www.youtube.com/watch?v=wMBsw8J_37M)
 
-### Website Link
+### Website Link (No longer available since my free plan is over 🫤)
 [LanMed Website](https://lanmed3-grfhbrbffrhfhwg2.canadacentral-01.azurewebsites.net)  *(Note: The app uses the free DeepL API and Microsoft Azure's free plan. This may result in translation issues as Microsoft requires an upgrade to use external REST APIs.)*
 
 ## Features
