@@ -72,7 +72,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
     
         // Use selected source language or default to English
         const sourceLang = formData.sourceLanguage || 'EN';  
-        const targetLang = formData.language.toUpperCase();  // Target language from your existing dropdown
+        const targetLang = formData.language.toUpperCase(); 
         const apiKey = import.meta.env.VITE_DEEPL_API_KEY;
     
         const apiUrl = `https://api-free.deepl.com/v2/translate?auth_key=${apiKey}&text=${encodeURIComponent(text)}&source_lang=${sourceLang}&target_lang=${targetLang}`;
@@ -111,7 +111,7 @@ const DocumentModal = ({ isOpen, onClose }) => {
 
     const handleTranslateAndSubmit = async (t) => {
         if (user) {
-            setIsTranslating(true);  // Set loading state
+            setIsTranslating(true);  
             const docRef = doc(db, 'users', user.uid);
             const docSnap = await getDoc(docRef);
     
