@@ -1,11 +1,17 @@
-## Overview
-LanMed helps people communicate with doctors by generating translated medical forms. Users input details and symptoms, and the app translates and formats them. The site supports 10+ languages, and PDFs can be translated into 30+ languages using DeepL API.
+# LanMed
+
+LanMed helps people communicate with doctors by generating translated medical forms. Users input details and symptoms, and the app translates and formats them. The site supports 10+ languages, and PDFs can be translated into 30+ languages using the DeepL API.
 
 ## Demo Video
 [Watch the demo](https://www.youtube.com/watch?v=wMBsw8J_37M)
 
-### Website Link (No longer available since my free plan is over 🫤)
-[LanMed Website](https://lanmed3-grfhbrbffrhfhwg2.canadacentral-01.azurewebsites.net)  *(Note: The app uses the free DeepL API and Microsoft Azure's free plan. This may result in translation issues as Microsoft requires an upgrade to use external REST APIs.)*
+## Website Link
+[LanMed Website](https://lanmed2-1.web.app)  
+*(Good news! LanMed is now also hosted using Firebase. Please note that PDF translation may not always work perfectly when multiple users are accessing the service simultaneously.)*
+
+### Previous Azure Hosting Link (No longer available as free plan ended 🫤)
+[Azure Hosted Link](https://lanmed3-grfhbrbffrhfhwg2.canadacentral-01.azurewebsites.net)  
+*(This hosted version used Microsoft Azure's free plan, which required an upgrade to use external REST APIs.)*
 
 ## Features
 - **User Registration** – Collect personal and health info.
@@ -14,7 +20,7 @@ LanMed helps people communicate with doctors by generating translated medical fo
 - **Document Generation** – Clear, formatted PDFs.
 - **Firebase Integration** – User management and data storage.
 - **Multi-Language Support** – 10+ languages for the site, 30+ for PDFs.
-- **Hosting** – Microsoft Azure with GitHub Actions.
+- **Hosting** – Microsoft Azure (original) and Firebase Hosting (current).
 
 ## Technologies
 - **Frontend** – React, Vite, HTML, CSS, Tailwind CSS
@@ -22,33 +28,11 @@ LanMed helps people communicate with doctors by generating translated medical fo
 - **Database** – Firestore
 - **Auth** – Firebase Authentication
 - **Translation** – DeepL API
-- **Hosting** – Microsoft Azure
+- **Hosting** – Microsoft Azure (original), Firebase Hosting (current)
 
 ## Setup
 ```bash
 git clone https://github.com/username/repository-name.git
+cd repository-name
 npm install
 npm start
-```
-
-## Config
-Create a `.env` file:
-```env
-VITE_FIREBASE_API_KEY=your_key
-VITE_DEEPL_API_KEY=your_key
-```
-
-## Usage
-1. Register or log in.
-2. Enter personal info.
-3. Describe symptoms.
-4. Download translated forms.
-
-## Why I Made This
-LanMed helps break language barriers for medical needs, ensuring critical health info is clearly communicated.
-
-## Contact
-For questions, contact **Hayden Baek** at **hayden111712@gmail.com**.
-
-*LanMed is a project by Hayden Baek.*
-
