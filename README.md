@@ -13,8 +13,8 @@ LanMed helps people communicate with doctors by generating translated medical fo
 [Azure Hosted Link](https://lanmed3-grfhbrbffrhfhwg2.canadacentral-01.azurewebsites.net)  
 *(This hosted version used Microsoft Azure's free plan, which required an upgrade to use external REST APIs.)*
 
-##Documentation
-[View Documentation](https://docs.google.com/document/d/1UckQy19q-tf2DQaB0unZAAsFjeYFF7EHsH2zY3H5Zz8/edit?usp=sharing)
+## Documentation
+[View Documentation](https://docs.google.com/document/d/1UckQy19q-tf2DQaB0unZAAsFjeYFF7EHsH2zY3H5Zz8/edit?usp=sharing) 
 
 ## Features
 - **User Registration** – Collect personal and health info.
