@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth, db } from '../firebase';
-import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { registerUser, getProfile } from '../utils/api';
+import { useAuth } from '../hooks/useAuth';
 
 function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -12,24 +11,14 @@ function SignUpForm() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { t } = useTranslation();  // Translation hook
+  const { setUser } = useAuth();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      await updateProfile(user, {
-        displayName: name,
-      });
-
-      await setDoc(doc(db, 'users', user.uid), {
-        name,
-        email,
-        uid: user.uid,
-        firstLogin: true,
-      });
-
+      await registerUser({ email, password, name });
+      const profile = await getProfile();
+      setUser(profile);
       navigate('/complete-profile');
     } catch (error) {
       setError(error.message);

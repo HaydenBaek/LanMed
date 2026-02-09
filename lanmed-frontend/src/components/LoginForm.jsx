@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
 import { useNavigate, Link } from 'react-router-dom';
-import checkFirstTimeLogin from '../utils/checkFirstTimeLogin';
+import { getProfile, login } from '../utils/api';
+import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';  // Ensure i18n is imported
 
@@ -20,20 +19,17 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      await login(email, password);
+      const profile = await getProfile();
+      setUser(profile);
 
-      const { isFirstTime } = await checkFirstTimeLogin(user.uid);
-
-      if (isFirstTime) {
-        navigate('/complete-profile');
-      } else {
-        navigate('/dashboard');
-      }
+      const isFirstTime = !profile?.dob;
+      navigate(isFirstTime ? '/complete-profile' : '/dashboard');
     } catch (error) {
       setError(t('invalid_credentials'));  // Translate error message
       console.error('Login error:', error);

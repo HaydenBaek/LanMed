@@ -13,7 +13,7 @@ import GuidePage from './components/GuidPage';
 import NotFoundPage from './components/NotFoundPage';
 
 
-import { useAuth } from '../src/hooks/UseAuth';
+import { useAuth } from './hooks/useAuth';
 import './i18n';  // Import the i18n configuration
 
 function App() {

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { auth, db } from '../firebase';
-import { signOut, updateEmail, updatePassword } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import NavbarSwitcher from './NavbarSwitcher';
 import Swal from 'sweetalert2';
+import { getProfile, updateProfile } from '../utils/api';
+import { useAuth } from '../hooks/useAuth';
 
 
 
@@ -25,29 +24,21 @@ function ProfilePage() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
-    const user = auth.currentUser;
+    const { user, setUser, logout } = useAuth();
 
     // Fetch user data on load
     useEffect(() => {
         const fetchUserData = async () => {
-            if (user) {
-                const docRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    setFormData({
-                        email: user.email || '',
-                        password: '',
-                        dob: data.dob || '',
-                        allergies: data.allergies || '',
-                        medications: data.medications || '',
-                        surgeries: data.surgeries || ''
-                    });
-                } else {
-                    console.warn('No user data found');
-                }
-            }
+            if (!user) return;
+            const profile = await getProfile();
+            setFormData({
+                email: profile.email || '',
+                password: '',
+                dob: profile.dob || '',
+                allergies: profile.allergies || '',
+                medications: profile.medications || '',
+                surgeries: profile.surgeries || ''
+            });
         };
         fetchUserData();
     }, [user]);
@@ -69,25 +60,17 @@ function ProfilePage() {
         setSuccess('');
 
         try {
-            // Update email if changed
-            if (formData.email !== user.email) {
-                await updateEmail(user, formData.email);
-            }
-
-            // Update password if provided
-            if (formData.password) {
-                await updatePassword(user, formData.password);
-            }
-
-            // Update Firestore data
-            const docRef = doc(db, 'users', user.uid);
-            await updateDoc(docRef, {
+            await updateProfile({
+                email: formData.email,
+                password: formData.password || undefined,
                 dob: formData.dob,
                 allergies: formData.allergies,
                 medications: formData.medications,
                 surgeries: formData.surgeries
             });
 
+            const profile = await getProfile();
+            setUser(profile);
             setSuccess(t('profile_updated_successfully'));
         } catch (error) {
             console.error('Error updating profile:', error);
@@ -107,25 +90,17 @@ function ProfilePage() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    // Update email if changed
-                    if (formData.email !== user.email) {
-                        await updateEmail(user, formData.email);
-                    }
-    
-                    // Update password if provided
-                    if (formData.password) {
-                        await updatePassword(user, formData.password);
-                    }
-    
-                    // Update Firestore data
-                    const docRef = doc(db, 'users', user.uid);
-                    await updateDoc(docRef, {
+                    await updateProfile({
+                        email: formData.email,
+                        password: formData.password || undefined,
                         dob: formData.dob,
                         allergies: formData.allergies,
                         medications: formData.medications,
                         surgeries: formData.surgeries
                     });
-    
+
+                    const profile = await getProfile();
+                    setUser(profile);
                     Swal.fire({
                         title: t('profile_updated_successfully', 'Profile updated successfully'),
                         icon: 'success',
@@ -161,20 +136,13 @@ function ProfilePage() {
             cancelButtonText: t('cancel', 'Cancel')
         }).then((result) => {
             if (result.isConfirmed) {
-                // Perform the logout
-                auth.signOut().then(() => {
-                    Swal.fire({
-                        title: t('logged_out', 'Logged out successfully'),
-                        icon: 'success',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                }).catch((error) => {
-                    Swal.fire({
-                        title: t('logout_failed', 'Failed to log out'),
-                        icon: 'error',
-                        text: error.message
-                    });
+                logout();
+                navigate('/landing');
+                Swal.fire({
+                    title: t('logged_out', 'Logged out successfully'),
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
                 });
             }
         });

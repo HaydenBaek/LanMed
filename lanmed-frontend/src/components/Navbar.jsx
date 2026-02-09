@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { auth } from '../firebase';
+import { useAuth } from '../hooks/useAuth';
 
 function Navbar() {
     const { t, i18n } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [user, setUser] = useState(null);  // Track user state
+    const { user } = useAuth();
 
     const handleLanguageChange = (e) => {
         const newLanguage = e.target.value;
@@ -15,16 +15,6 @@ function Navbar() {
     };
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-    // Listen for authentication changes
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-            setUser(currentUser);
-        });
-
-        // Cleanup the listener when the component unmounts
-        return () => unsubscribe();
-    }, []);
 
     return (
         <nav className="bg-primary w-full border-b-2 border-secondary">

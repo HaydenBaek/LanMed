@@ -1,48 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { auth, db } from '../firebase';
-import { collection, getDocs, doc, deleteDoc, getDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import Swal from 'sweetalert2';
-import { onAuthStateChanged } from 'firebase/auth';
 import jsPDF from 'jspdf';
+import { deleteDocument, getDocument, getDocuments } from '../utils/api';
+import { useAuth } from '../hooks/useAuth';
 
 function DocumentList() {
     const { t } = useTranslation();
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedDocument, setSelectedDocument] = useState(null);
-    const [user, setUser] = useState(null);
+    const { user } = useAuth();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-            if (currentUser) {
-                fetchDocuments(currentUser.uid);
-            } else {
-                setDocuments([]);
-                setLoading(false);
-            }
-        });
+        if (user) {
+            fetchDocuments();
+        } else {
+            setDocuments([]);
+            setLoading(false);
+        }
+    }, [user]);
 
-        return () => unsubscribe();
-    }, []);
-
-    const fetchDocuments = async (userId) => {
+    const fetchDocuments = async () => {
         try {
             setLoading(true);
-            const docRef = collection(db, `users/${userId}/documents`);
-            const docSnap = await getDocs(docRef);
-
-            if (docSnap.empty) {
-                console.warn('No documents found.');
-            } else {
-                const docList = docSnap.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    createdAt: doc.data().createdAt || null
-                }));
-                setDocuments(docList);
-            }
+            const docList = await getDocuments();
+            setDocuments(docList || []);
         } catch (error) {
             console.error("Error fetching documents:", error);
         }
@@ -51,17 +34,8 @@ function DocumentList() {
 
     const handleView = async (id) => {
         try {
-            const docRef = doc(db, `users/${user.uid}/documents/${id}`);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                setSelectedDocument(docSnap.data());
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: t('document_not_found', 'Document not found.')
-                });
-            }
+            const docData = await getDocument(id);
+            setSelectedDocument(docData);
         } catch (error) {
             console.error("Error viewing document:", error);
         }
@@ -74,20 +48,20 @@ function DocumentList() {
         pdf.setFontSize(12);
 
         const content = [
-            `Name: ${docData.documentData.translatedName || 'N/A'}`,
-            `DOB: ${docData.documentData.translatedDob || 'N/A'}`,
-            `Allergies: ${docData.documentData.translatedAllergies || 'None'}`,
-            `Medications: ${docData.documentData.translatedMedications || 'None'}`,
-            `Symptoms: ${docData.documentData.translatedSymptoms || 'N/A'}`,
-            `Doctor Questions: ${docData.documentData.translatedQuestions || 'N/A'}`,
-            `Notes: ${docData.documentData.translatedNotes || 'None'}`
+            `Name: ${docData.translated_patient_name || 'N/A'}`,
+            `DOB: ${docData.translated_patient_dob || 'N/A'}`,
+            `Allergies: ${docData.translated_patient_allergies || 'None'}`,
+            `Medications: ${docData.translated_patient_medications || 'None'}`,
+            `Symptoms: ${docData.translated_symptoms || 'N/A'}`,
+            `Doctor Questions: ${docData.translated_questions || 'N/A'}`,
+            `Notes: ${docData.translated_notes || 'None'}`
         ];
 
         content.forEach((line, i) => {
             pdf.text(line, 10, 30 + i * 10);
         });
 
-        pdf.save(`${docData.pdfName || 'document'}.pdf`);
+        pdf.save(`${docData.pdf_name || 'document'}.pdf`);
 
         Swal.fire({
             icon: 'success',
@@ -110,8 +84,7 @@ function DocumentList() {
 
         if (result.isConfirmed) {
             try {
-                const docRef = doc(db, `users/${user.uid}/documents/${id}`);
-                await deleteDoc(docRef);
+                await deleteDocument(id);
 
                 setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
 
@@ -147,10 +120,10 @@ function DocumentList() {
                         <li key={doc.id} className="py-4">
                             <div className="flex justify-between items-center">
                                 <div>
-                                    <h3 className="text-lg font-semibold">{doc.pdfName || t('unknown_document', 'Untitled Document')}</h3>
+                                    <h3 className="text-lg font-semibold">{doc.pdf_name || t('unknown_document', 'Untitled Document')}</h3>
                                     <p className="text-sm text-secondary">
-                                        {doc.createdAt?.seconds
-                                            ? new Date(doc.createdAt.seconds * 1000).toLocaleDateString()
+                                        {doc.created_at
+                                            ? new Date(doc.created_at).toLocaleDateString()
                                             : t('unknown_date')}
                                     </p>
                                 </div>
@@ -179,16 +152,16 @@ function DocumentList() {
                         <h2 className="text-2xl font-bold text-primary mb-4">
                             {t('document_preview', 'Document Preview')}
                         </h2>
-                        <p><strong>{t('name')}:</strong> {selectedDocument.documentData?.pdfName || t('unknown')}</p>
-                        <p><strong>{t('dob')}:</strong> {selectedDocument.documentData?.dob || t('na')}</p>
-                        <p><strong>{t('allergies')}:</strong> {selectedDocument.documentData?.allergies || t('none')}</p>
-                        <p><strong>{t('medications')}:</strong> {selectedDocument.documentData?.medications || t('none')}</p>
-                        <p><strong>{t('describe_symptoms')}:</strong> {selectedDocument.documentData?.symptoms || t('na')}</p>
-                        <p><strong>{t('symptom_start_date')}:</strong> {selectedDocument.documentData?.symptomStartDate || t('na')}</p>
-                        <p><strong>{t('symptom_start_time')}:</strong> {selectedDocument.documentData?.symptomStartTime || t('na')}</p>
-                        <p><strong>{t('medication_taken')}:</strong> {selectedDocument.documentData?.medicationTaken || t('none')}</p>
-                        <p><strong>{t('doctor_questions')}:</strong> {selectedDocument.documentData?.doctorQuestions || t('none')}</p>
-                        <p><strong>{t('additional_notes')}:</strong> {selectedDocument.documentData?.notes || t('none')}</p>
+                        <p><strong>{t('name')}:</strong> {selectedDocument.pdf_name || t('unknown')}</p>
+                        <p><strong>{t('dob')}:</strong> {selectedDocument.patient_dob || t('na')}</p>
+                        <p><strong>{t('allergies')}:</strong> {selectedDocument.patient_allergies || t('none')}</p>
+                        <p><strong>{t('medications')}:</strong> {selectedDocument.patient_medications || t('none')}</p>
+                        <p><strong>{t('describe_symptoms')}:</strong> {selectedDocument.symptoms || t('na')}</p>
+                        <p><strong>{t('symptom_start_date')}:</strong> {selectedDocument.symptom_start_date || t('na')}</p>
+                        <p><strong>{t('symptom_start_time')}:</strong> {selectedDocument.symptom_start_time || t('na')}</p>
+                        <p><strong>{t('medication_taken')}:</strong> {selectedDocument.medication_taken || t('none')}</p>
+                        <p><strong>{t('doctor_questions')}:</strong> {selectedDocument.doctor_questions || t('none')}</p>
+                        <p><strong>{t('additional_notes')}:</strong> {selectedDocument.notes || t('none')}</p>
 
 
                         <div className="flex justify-end mt-6">

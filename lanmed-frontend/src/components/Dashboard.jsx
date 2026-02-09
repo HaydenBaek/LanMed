@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
 import DocumentModal from './DocumentModal';
 import DocumentList from './DocumentList';
 import { useTranslation } from 'react-i18next';
 import NavbarSwitcher from './NavbarSwitcher';
+import { getProfile } from '../utils/api';
+import { useAuth } from '../hooks/useAuth';
 
 function Dashboard() {
 
@@ -12,20 +12,13 @@ function Dashboard() {
 
     const { t } = useTranslation();
     const [userData, setUserData] = useState(null);
-    const user = auth.currentUser;
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchUserData = async () => {
-            if (user) {
-                const docRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    setUserData(docSnap.data());
-                } else {
-                    console.warn('No user data found in Firestore.');
-                }
-            }
+            if (!user) return;
+            const profile = await getProfile();
+            setUserData(profile);
         };
         fetchUserData();
     }, [user]);
@@ -58,7 +51,7 @@ function Dashboard() {
                 <div className="bg-white p-10 rounded-lg shadow-lg max-w-2xl w-full text-center">
                     <div className="p-2 text-primary">
                         <h1 className="text-4xl font-bold">
-                            {t('welcome_dashboard', { name: userData?.name || user?.displayName || 'LanMed' })}
+                            {t('welcome_dashboard', { name: userData?.name || 'LanMed' })}
                         </h1>
                         <p className="mt-4 text-lg">{t('translator_description')}</p>
                     </div>

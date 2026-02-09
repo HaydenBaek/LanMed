@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db } from '../firebase';
-import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import generatePDF from './generatePDF';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
+import { createDocument, getProfile, translate } from '../utils/api';
 
 const DocumentModal = ({ isOpen, onClose }) => {
     const { t } = useTranslation();
@@ -19,7 +18,8 @@ const DocumentModal = ({ isOpen, onClose }) => {
         medicationTaken: '',
         translatedSymptoms: '',
         translatedQuestions: '',
-        language: 'en'
+        language: 'en',
+        sourceLanguage: 'en'
     };
 
 
@@ -28,26 +28,13 @@ const DocumentModal = ({ isOpen, onClose }) => {
     const [step, setStep] = useState(0);
     const [formData, setFormData] = useState(initialFormState);
     const [userData, setUserData] = useState({});
-    const user = auth.currentUser;
 
     const fetchUserData = async () => {
-        const user = auth.currentUser;
-
-        if (user) {
-            try {
-                const docRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    setUserData(docSnap.data());  // Set data directly
-                } else {
-                    console.log('No user data found');
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            } finally {
-                setLoading(false);
-            }
+        try {
+            const profile = await getProfile();
+            setUserData(profile);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
         }
     };
 
@@ -71,30 +58,11 @@ const DocumentModal = ({ isOpen, onClose }) => {
         }
     
         // Use selected source language or default to English
-        const sourceLang = formData.sourceLanguage || 'EN';  
-        const targetLang = formData.language.toUpperCase(); 
-        const apiKey = import.meta.env.VITE_DEEPL_API_KEY;
-    
-        const apiUrl = `https://api-free.deepl.com/v2/translate?auth_key=${apiKey}&text=${encodeURIComponent(text)}&source_lang=${sourceLang}&target_lang=${targetLang}`;
-    
+        const sourceLang = (formData.sourceLanguage || 'EN').toUpperCase();
+        const targetLang = (formData.language || 'EN').toUpperCase();
+
         try {
-            const res = await fetch(apiUrl);
-            const responseBody = await res.json();
-    
-            console.log('DeepL Response Status:', res.status);
-            console.log('DeepL Response Body:', responseBody);
-    
-            if (!res.ok) {
-                console.error('DeepL API Error:', responseBody.message);
-                return `Translation error: ${responseBody.message || 'Unknown error'}`;
-            }
-    
-            if (responseBody.translations && responseBody.translations[0]) {
-                return responseBody.translations[0].text;
-            } else {
-                console.error("Translation failed.");
-                return text;
-            }
+            return await translate(text, sourceLang, targetLang);
         } catch (error) {
             console.error("Translation Error:", error);
             return text;
@@ -110,83 +78,88 @@ const DocumentModal = ({ isOpen, onClose }) => {
     const [isTranslating, setIsTranslating] = useState(false);
 
     const handleTranslateAndSubmit = async (t) => {
-        if (user) {
-            setIsTranslating(true);  
-            const docRef = doc(db, 'users', user.uid);
-            const docSnap = await getDoc(docRef);
-    
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-    
-                try {
-                    // Translate user data fields
-                    const [
-                        translatedName,
-                        translatedDob,
-                        translatedAllergies,
-                        translatedMedications,
-                        translatedSurgeries
-                    ] = await Promise.all([
-                        translateText(data.name, formData.language),
-                        translateText(data.dob, formData.language),
-                        translateText(data.allergies || 'None', formData.language),
-                        translateText(data.medications || 'None', formData.language),
-                        translateText(data.surgeries || 'None', formData.language)
-                    ]);
-    
-                    const translatedUserData = {
-                        ...data,
-                        translatedName,
-                        translatedDob,
-                        translatedAllergies,
-                        translatedMedications,
-                        translatedSurgeries
-                    };
-    
-                    // Translate form data fields
-                    const [
-                        translatedSymptoms,
-                        translatedQuestions,
-                        translatedNotes,
-                        translatedMedicationTaken
-                    ] = await Promise.all([
-                        translateText(formData.symptoms, formData.language),
-                        translateText(formData.doctorQuestions, formData.language),
-                        translateText(formData.notes, formData.language),
-                        translateText(formData.medicationTaken, formData.language)
-                    ]);
-    
-                    // Use PDF name from formData if provided, otherwise fallback to original name
-                    const pdfName = formData.pdfName || `${data.name}_${new Date().toISOString().slice(0, 10)}`;
-                    
-                    const finalData = {
-                        ...translatedUserData,
-                        ...formData,
-                        translatedSymptoms,
-                        translatedQuestions,
-                        translatedNotes,
-                        translatedMedicationTaken,
-                        pdfName,
-                        createdAt: new Date()
-                    };
-    
-                    await addDoc(collection(db, `users/${user.uid}/documents`), {
-                        documentData: finalData,
-                        pdfName: pdfName,
-                        createdAt: new Date()
-                    });
-    
-                    generatePDF(finalData, translatedUserData, t, i18n.language, formData.language, pdfName);
-                } catch (error) {
-                    console.error('Error saving document:', error);
-                    alert('Failed to save document.');
-                } finally {
-                    setIsTranslating(false);  // Reset loading state
-                }
-            } else {
-                console.warn('No user data found.');
-                setIsTranslating(false);
-            }
+        setIsTranslating(true);
+        try {
+            const data = userData || {};
+
+            // Translate user data fields
+            const [
+                translatedName,
+                translatedDob,
+                translatedAllergies,
+                translatedMedications,
+                translatedSurgeries
+            ] = await Promise.all([
+                translateText(data.name || '', formData.language),
+                translateText(data.dob || '', formData.language),
+                translateText(data.allergies || 'None', formData.language),
+                translateText(data.medications || 'None', formData.language),
+                translateText(data.surgeries || 'None', formData.language)
+            ]);
+
+            const translatedUserData = {
+                ...data,
+                translatedName,
+                translatedDob,
+                translatedAllergies,
+                translatedMedications,
+                translatedSurgeries
+            };
+
+            // Translate form data fields
+            const [
+                translatedSymptoms,
+                translatedQuestions,
+                translatedNotes,
+                translatedMedicationTaken
+            ] = await Promise.all([
+                translateText(formData.symptoms, formData.language),
+                translateText(formData.doctorQuestions, formData.language),
+                translateText(formData.notes, formData.language),
+                translateText(formData.medicationTaken, formData.language)
+            ]);
+
+            const pdfName = formData.pdfName || `${data.name || 'LanMed'}_${new Date().toISOString().slice(0, 10)}`;
+
+            const payload = {
+                pdf_name: pdfName,
+                symptoms: formData.symptoms,
+                symptom_start_date: formData.symptomStartDate || null,
+                symptom_start_time: formData.symptomStartTime || null,
+                severity: formData.severity || null,
+                doctor_questions: formData.doctorQuestions,
+                notes: formData.notes,
+                medication_taken: formData.medicationTaken,
+                source_language: formData.sourceLanguage || 'en',
+                language: formData.language || 'en',
+                translated_symptoms: translatedSymptoms,
+                translated_questions: translatedQuestions,
+                translated_notes: translatedNotes,
+                translated_medication_taken: translatedMedicationTaken,
+                translated_patient_name: translatedName,
+                translated_patient_dob: translatedDob,
+                translated_patient_allergies: translatedAllergies,
+                translated_patient_medications: translatedMedications,
+                translated_patient_surgeries: translatedSurgeries
+            };
+
+            await createDocument(payload);
+
+            const finalFormData = {
+                ...formData,
+                translatedSymptoms,
+                translatedQuestions,
+                translatedNotes,
+                translatedMedicationTaken,
+                pdfName,
+            };
+
+            generatePDF(finalFormData, translatedUserData, t, i18n.language, formData.language, pdfName);
+        } catch (error) {
+            console.error('Error saving document:', error);
+            alert('Failed to save document.');
+        } finally {
+            setIsTranslating(false);
         }
     };
     

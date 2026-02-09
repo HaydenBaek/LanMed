@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { auth, db } from '../firebase';
-import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { updateProfile, getProfile } from '../utils/api';
+import { useAuth } from '../hooks/useAuth';
 
 function CompleteProfile() {
   const { t } = useTranslation();
@@ -14,6 +14,7 @@ function CompleteProfile() {
   const [surgeries, setSurgeries] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const handleDobChange = (e) => {
     const dobValue = e.target.value;
@@ -37,28 +38,17 @@ function CompleteProfile() {
 
   const handleCompleteProfile = async (e) => {
     e.preventDefault();
-    const user = auth.currentUser;
-
-    if (!user) {
-      setError(t('user_not_authenticated'));
-      console.error('Error: User not authenticated.');
-      return;
-    }
-
     try {
-      console.log('Updating Firestore...');
-      await setDoc(doc(db, 'users', user.uid), {
-        name: user.displayName,
-        email: user.email,
+      await updateProfile({
         dob,
         age: calculatedAge,
         allergies,
         medications,
         surgeries,
-        firstLogin: false,
-      }, { merge: true });
+      });
 
-      console.log('Firestore updated.');
+      const profile = await getProfile();
+      setUser(profile);
       navigate('/dashboard');
 
     } catch (error) {
